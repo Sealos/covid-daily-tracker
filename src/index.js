@@ -1,15 +1,3 @@
-const { withProps } = require('bottender');
-const { router, text } = require('bottender/router');
-
-
-async function HandleDelivery(context) {
-  await context.sendText(`Watermark: ${context.event.delivery.watermark}`);
-}
-
-async function HandleRead(context) {
-  await context.sendText(`Watermark: ${context.event.read.watermark}`);
-}
-
 module.exports = async function App(context) {
 
   if (context.event.isText) {
@@ -32,6 +20,8 @@ module.exports = async function App(context) {
         text: previousTexts,
       });
 
+      console.log(context);
+
       await context.sendButtonTemplate("Hello!, how are you feeling today?", [
         {
           type: 'postback',
@@ -43,17 +33,38 @@ module.exports = async function App(context) {
           title: 'I\'m not sure...',
           payload: 'USER_FEEDBACK_IS_NOT_SURE',
         },
+        {
+          type: "phone_number",
+          title: "Call for help",
+          payload: "1177"
+        }
       ]);
-
-      await context.sendText(`received the text message: ${context.event.text}`);
     }
+
+    await context.sendText('Hi!', {
+      quickReplies: [
+        {
+          contentType: 'text',
+          title: 'Test 1',
+          payload: 'Test2',
+        },
+        {
+          contentType: 'user_phone_number',
+        },
+        {
+          contentType: 'user_email',
+        },
+      ],
+    });
   }
 
   if (context.event.isPayload) {
     let previousPayloads = context.state.payloads;
 
+    const currentPayload = context.event.payload;
+
     const newPayload = {
-      event: context.event.payload,
+      event: currentPayload,
       date: new Date()
     };
 
@@ -63,17 +74,9 @@ module.exports = async function App(context) {
       payloads: previousPayloads,
     });
 
-    await context.sendText(`received the payload: ${context.event.payload}`);
   }
 
   if (context.event.isLikeSticker) {
     await context.sendText(':D');
-  }
-
-  if (context.event.isDelivery) {
-    return HandleDelivery;
-  }
-  if (context.event.isRead) {
-    return HandleRead;
   }
 };
