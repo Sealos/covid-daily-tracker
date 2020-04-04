@@ -27,16 +27,6 @@ module.exports = {
             text: 'Hello {{user_first_name}}!',
           },
         ],
-        iceBreakers: [
-          {
-            question: '<QUESTION 1>',
-            payload: '<PAYLOAD 1>',
-          },
-          {
-            question: '<QUESTION 2>',
-            payload: '<PAYLOAD 2>',
-          },
-        ],
         persistentMenu: [
           {
             locale: 'default',
