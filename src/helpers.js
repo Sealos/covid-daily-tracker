@@ -2,7 +2,6 @@ const translations = {
     // Symptoms
     'fever': 'Fever',
     'cough': 'Cough',
-    'dry_cough': 'Dry Cough',
     'headache': 'Headache',
     'diarrhea': 'Diarrhea',
     'sore_throat': 'Sore throat',

@@ -71,7 +71,6 @@ function remainingSymptoms(currentSymptoms) {
     const allValidSymptoms = [
         'fever',
         'cough',
-        'dry_cough',
         'headache',
         'diarrhea',
         'tiredness',
