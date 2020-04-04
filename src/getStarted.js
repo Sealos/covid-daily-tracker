@@ -18,7 +18,6 @@ async function GetStarted(context) {
 
     await context.typing(4000);
 
-
     await context.sendText("How are you feeling today?", {
         quickReplies: [
             {
@@ -37,4 +36,7 @@ async function GetStarted(context) {
     await context.typingOff();
 }
 
-module.exports = { GetStarted, ResetState };
+module.exports = {
+    GetStarted,
+    ResetState
+};

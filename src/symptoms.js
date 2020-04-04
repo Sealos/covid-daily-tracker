@@ -1,5 +1,6 @@
 const helpers = require('./helpers');
 const Analytics = require('./analytics');
+const RiskAssessment = require('./riskAssessment');
 
 // First time asking for symptoms
 async function HandlePayloadUserSick(context) {
@@ -29,14 +30,13 @@ async function HandleNothingElse(context) {
 
     await context.typingOff();
 
-    await HandleAskForTested(context);
+    await RiskAssessment.HandleAskForTested(context);
 }
 
 async function HandlePayloadSymptomReport(context) {
     const payload = context.event.payload;
 
     if (payload == 'USER_FEEDBACK_SICK_NOTHING_ELSE') {
-
         await HandleNothingElse(context);
     } else {
         const currentSymptoms = extractSymptoms(context);
@@ -68,31 +68,6 @@ async function HandlePayloadSymptomReport(context) {
     }
 }
 
-async function HandleAskForTested(context) {
-    await context.typing(2000);
-    await context.sendText('Have you had a positive test result for COVID-19?', {
-        quickReplies: [
-            {
-                contentType: 'text',
-                title: 'Yes, I have',
-                payload: 'USER_FEEDBACK_TESTED_POSITIVE',
-            },
-            {
-                contentType: 'text',
-                title: 'No, but it\'s likely',
-                payload: 'USER_FEEDBACK_TESTED_NO_LIKELY',
-            },
-            {
-                contentType: 'text',
-                title: 'No',
-                payload: 'USER_FEEDBACK_TESTED_NO',
-            },
-        ],
-    });
-
-    context.typingOff();
-}
-
 function remainingSymptoms(currentSymptoms) {
     const allValidSymptoms = [
         'fever',
@@ -100,6 +75,7 @@ function remainingSymptoms(currentSymptoms) {
         'dry_cough',
         'headache',
         'diarrhea',
+        'tiredness',
         'difficulty_breathing',
         'sore_throat',
         'no_smell'
@@ -109,17 +85,12 @@ function remainingSymptoms(currentSymptoms) {
 }
 
 function extractSymptoms(context) {
-    const state = context.state.payloads || [];
-
-    const currentSymptoms = state
-        .filter(x => x.event.includes('USER_FEEDBACK_SICK'))
-        .map(x => x.event.replace('USER_FEEDBACK_SICK_', '').toLowerCase());
-
-    return currentSymptoms;
+    return helpers.extractEvents(context, 'USER_FEEDBACK_SICK');
 }
 
 module.exports = {
     HandlePayloadUserSick,
     HandlePayloadSymptomReport,
-    HandleAskForTested
+    extractSymptoms,
+    remainingSymptoms
 };
