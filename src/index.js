@@ -1,78 +1,10 @@
-async function TrackText(context) {
-  const currentText = context.event.text;
-
-  if (currentText) {
-    let previousTexts = context.state.texts || [];
-
-    const newText = {
-      text: currentText,
-      date: new Date()
-    };
-
-    previousTexts.push(newText);
-
-    await context.setState({
-      text: previousTexts,
-    });
-  }
-}
-
-async function TrackPayload(context) {
-  const currentPayload = context.event.payload;
-
-  if (currentPayload) {
-    let previousPayloads = context.state.payloads;
-
-    const newPayload = {
-      event: currentPayload,
-      date: new Date()
-    };
-
-    previousPayloads.push(newPayload);
-
-    await context.setState({
-      payloads: previousPayloads,
-    });
-  }
-}
-
-async function HandleAskForPostalCode(context) {
-  await context.typing(2000);
-  await context.sendText('We are building a analytics for everyone to use. Help us be better!');
-  await context.typing(2000);
-  await context.sendText('Would you mind sharing your postal code?');
-  context.typingOff();
-}
-
-async function HandleAskForTested(context) {
-  await context.typing(2000);
-  await context.sendText('Have you had a positive test result for COVID-19?', {
-    quickReplies: [
-      {
-        contentType: 'text',
-        title: 'Yes, I have',
-        payload: 'USER_FEEDBACK_TESTED_POSITIVE',
-      },
-      {
-        contentType: 'text',
-        title: 'No, but it\'s likely',
-        payload: 'USER_FEEDBACK_TESTED_NO_LIKELY',
-      },
-      {
-        contentType: 'text',
-        title: 'No',
-        payload: 'USER_FEEDBACK_TESTED_NO',
-      },
-    ],
-  });
-
-  context.typingOff();
-}
+const Analytics = require('./analytics');
+const GetStarted = require('./getStarted');
+const Symptoms = require('./symptoms');
+const Extra = require('./extraQuestions');
 
 async function HandlePayloadTested(context) {
-
-
-  await HandleAskForPostalCode(context);
+  await Analytics.HandleAskForPostalCode(context);
 }
 
 async function HandlePayloadHealthy(context) {
@@ -82,168 +14,38 @@ async function HandlePayloadHealthy(context) {
   context.typingOff();
 }
 
-async function HandlePayloadUserSick(context) {
-
-  await context.typing(4000);
-
-  await context.sendButtonTemplate('I’m sorry, what are your symptoms?', [
-    {
-      type: 'postback',
-      title: 'Fever',
-      payload: 'USER_FEEDBACK_SICK_FEVER',
-    },
-    {
-      type: 'postback',
-      title: 'Cough',
-      payload: 'USER_FEEDBACK_SICK_COUGH',
-    },
-    {
-      type: 'postback',
-      title: 'Difficult breathing',
-      payload: 'USER_FEEDBACK_SICK_BREATHING',
-    },
-  ]);
-
-  await context.typing(1000);
-  await context.sendText('Or maybe any of these?', {
-    quickReplies: [
-      {
-        contentType: 'text',
-        title: 'Headache',
-        payload: 'USER_FEEDBACK_SICK_HEADACHE',
-      },
-      {
-        contentType: 'text',
-        title: 'Diarrhea',
-        payload: 'USER_FEEDBACK_SICK_DIARREHEA',
-      },
-      {
-        contentType: 'text',
-        title: 'Sore Throat',
-        payload: 'USER_FEEDBACK_SICK_SORE_THROAT',
-      },
-      {
-        contentType: 'text',
-        title: 'I can\'t smell',
-        payload: 'USER_FEEDBACK_SICK_SMELL',
-      },
-      {
-        contentType: 'text',
-        title: 'Something else',
-        payload: 'USER_FEEDBACK_SICK_SOMETHING_ELSE',
-      },
-    ],
-  });
-
-  await context.typingOff();
-}
-
-async function HandlePayloadSymptomReport(context) {
-  const payload = context.event.payload;
-
-  let handled = false;
-
-  if (payload.includes('FEVER')) {
-    handled = true;
-
-    await context.typingOff();
-
-    await context.typing(4000);
-    await context.sendText('Anything else?', {
-      quickReplies: [
-        {
-          contentType: 'text',
-          title: 'Dry cough',
-          payload: 'USER_FEEDBACK_SICK_DRY_COUGH',
-        },
-        {
-          contentType: 'text',
-          title: 'Difficult breathing',
-          payload: 'USER_FEEDBACK_SICK_BREATHING',
-        },
-        {
-          contentType: 'text',
-          title: 'Headache',
-          payload: 'USER_FEEDBACK_SICK_HEADACHE',
-        },
-        {
-          contentType: 'text',
-          title: 'Diarrhea',
-          payload: 'USER_FEEDBACK_SICK_DIARREHEA',
-        },
-        {
-          contentType: 'text',
-          title: 'Nothing else',
-          payload: 'USER_FEEDBACK_SICK_NOTHING_ELSE',
-        },
-      ],
-    });
-  }
-
-  if (payload.includes('COUGH')) {
-    handled = true;
-
-    await HandleAskForTested(context);
-  }
-
-  if (payload == 'USER_FEEDBACK_SICK_NOTHING_ELSE') {
-    handled = true;
-
-    await context.typingOff();
-
-    await context.typing(4000);
-
-    await context.sendText('Okay, I see. Checking how else I can help...');
-
-    await HandleAskForPostalCode(context);
-  }
-
-  if (!handled) {
-    await context.sendText('I have a bug, I did not handle action: ' + payload);
-  }
-}
-
-async function GetStarted(context) {
-
-  await context.typing(2000);
-
-  await context.sendText('Hello!');
-
-  await context.typingOff();
-
-  await context.typing(4000);
-
-  await context.sendButtonTemplate("How are you feeling today?", [
-    {
-      type: 'postback',
-      title: 'Feeling healthy!',
-      payload: 'USER_FEEDBACK_IS_HEALTHY',
-    },
-    {
-      type: 'postback',
-      title: 'Feeling sick',
-      payload: 'USER_FEEDBACK_IS_SICK',
-    },
-  ]);
-
-  await context.typingOff();
-}
-
-
 module.exports = async function App(context) {
 
   if (context.event.isText) {
-    await TrackText(context);
+    await Analytics.TrackText(context);
+
+    await Analytics.HandleZipCodeReceived(context);
 
     // Check if waiting for postal number
 
     if (context.event.text == 'start' || context.event.text == 'Start') {
-      await GetStarted(context);
+      await GetStarted.GetStarted(context);
+    }
+
+    if (context.event.text.includes('debug:')) {
+      await GetStarted.ResetState(context);
+    }
+
+    if (context.event.text == 'debug:zip') {
+      await Analytics.HandleAskForPostalCode(context);
+    }
+
+    if (context.event.text == 'debug:sick') {
+      await Symptoms.HandlePayloadUserSick(context);
+    }
+
+    if (context.event.text == 'debug:extra') {
+      await Extra.ExtraQuestion(context);
     }
   }
 
   if (context.event.isPayload) {
-    await TrackPayload(context);
+    await Analytics.TrackPayload(context);
 
     // Check if I have enough data to do assessment
 
@@ -252,7 +54,7 @@ module.exports = async function App(context) {
     const payload = context.event.payload;
     if (payload == 'GET_STARTED') {
       handled = true;
-      await GetStarted(context);
+      await GetStarted.GetStarted(context);
     }
 
     if (payload == 'USER_FEEDBACK_IS_HEALTHY') {
@@ -262,12 +64,12 @@ module.exports = async function App(context) {
 
     if (payload == 'USER_FEEDBACK_IS_SICK') {
       handled = true;
-      await HandlePayloadUserSick(context);
+      await Symptoms.HandlePayloadUserSick(context);
     }
 
     if (payload.includes('USER_FEEDBACK_SICK')) {
       handled = true;
-      await HandlePayloadSymptomReport(context);
+      await Symptoms.HandlePayloadSymptomReport(context);
     }
 
     if (payload.includes('USER_FEEDBACK_TESTED')) {
@@ -279,6 +81,4 @@ module.exports = async function App(context) {
       await context.sendText('I have a bug, I did not handle action: ' + payload);
     }
   }
-
-  console.log(context.event);
 };
