@@ -3,7 +3,7 @@ const helpers = require('./helpers');
 
 async function HandleAskForTested(context) {
     await context.typing(2000);
-    await context.sendText('Have you had a positive test result for COVID-19?', {
+    await context.sendText('Have you had a positive test result for covid-19?', {
         quickReplies: [
             {
                 contentType: 'text',
@@ -118,11 +118,11 @@ async function AssessCompromisedImmune(context) {
 
     const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
 
-    await context.sendText('Have you compromised your immune system?\nFor example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like?');
+    await context.sendText('Have you compromised your immune system?');
 
     await context.typing(3000);
 
-    await context.sendText('Have you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system ?', { quickReplies: replies });
+    await context.sendText('For example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like? \n\nHave you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system?', { quickReplies: replies });
 
     await context.typingOff();
 }

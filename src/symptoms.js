@@ -25,7 +25,7 @@ async function HandleNothingElse(context) {
 
     await context.typing(4000);
 
-    await context.sendText('Okay, I see.\nI will ask some questions to assess you better');
+    await context.sendText('Okay, I see.');
 
     await context.typingOff();
 

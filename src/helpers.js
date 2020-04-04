@@ -5,16 +5,16 @@ const translations = {
     'headache': 'Headache',
     'diarrhea': 'Diarrhea',
     'sore_throat': 'Sore throat',
-    'no_smell': 'I can\'t smell',
+    'no_smell': 'Can\'t taste/ smell',
     'tiredness': 'Tiredness',
-    'difficulty_breathing': 'Difficuly breathing',
-    'something_else': 'Something else',
-    'nothing_else': 'Nothing else',
+    'difficulty_breathing': 'Difficulty breathing',
+    'something_else': 'Something else...',
+    'nothing_else': 'Nothing else.',
 
     // Risk assessment
-    'fever_ok': 'Below 37.5C',
-    'fever_medium': '37.5 - 39.4C',
-    'fever_high': '38.0 - 39.4C',
+    'fever_ok': 'Below 38C',
+    'fever_medium': '38.0 - 39.4C',
+    'fever_high': 'Above 39.4C',
 
     'cough_dry': 'Yes, it\'s dry',
     'cough_sputum': 'No, I have sputum',
@@ -22,7 +22,7 @@ const translations = {
 
     'cough_frequency_sometimes': 'Sometimes',
     'cough_frequency_often': 'Often',
-    'cough_frequency_always': 'All the time',
+    'cough_frequency_always': 'Almost all the time',
 
     'difficulty_breathing_light': 'On light effort',
     'difficulty_breathing_slightly': 'Slightly at rest',
@@ -40,7 +40,7 @@ const translations = {
     'ongoing_none': 'None',
     'ongoing_hypertension': 'Hypertension',
     'ongoing_cardiovascular': 'Cardiovascular disease',
-    'ongoing_lung': 'Lung Disease',
+    'ongoing_lung': 'Lung disease',
     'ongoing_cancer': 'Cancer',
     'ongoing_diabetes': 'Diabetes',
     'ongoing_renal': 'Renal failure',

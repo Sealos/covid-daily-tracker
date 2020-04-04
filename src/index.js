@@ -40,12 +40,12 @@ module.exports = async function App(context) {
       await Symptoms.HandlePayloadUserSick(context);
     }
 
-    if (context.event.text == 'debug:extra') {
-      await Extra.ExtraQuestion(context);
-    }
-
     if (context.event.text == 'debug:risk') {
       await Risk.StartRiskAssessment(context);
+    }
+
+    if (context.event.text == 'debug:extra') {
+      await Extra.ExtraQuestion(context);
     }
   }
 
@@ -86,11 +86,18 @@ module.exports = async function App(context) {
       handled = true;
 
       if (payload == 'USER_FEEDBACK_TESTED_POSITIVE') {
+        //@questions /gigi: I think we want the postal code no matter positive, negative, or suspected.
         await HandlePayloadTested(context);
       } else {
         await Risk.StartRiskAssessment(context);
       }
     }
+
+    if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
+      handled = true;
+      await Extra.HandleContinueExtra(context);
+    }
+
 
     if (!handled) {
       await context.sendText('I have a bug, I did not handle action: ' + payload);

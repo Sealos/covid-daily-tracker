@@ -66,7 +66,7 @@ async function HandleZipCodeReceived(context) {
 
     if (!isValid) {
         await context.typing(4000);
-        await context.sendText('Hmm, I didn\'t understand that\nCould you send that again?');
+        await context.sendText('Hmm, I didn\'t understand.\nWhat is your postal code again?');
         context.typingOff();
     } else {
         await context.setState({
@@ -75,7 +75,7 @@ async function HandleZipCodeReceived(context) {
 
         // Handle zipcode
         await context.typing(4000);
-        await context.sendText('Thank you.\nYou can come back tomorrow to report how you\'re feeling\nI can help you keep track of your symptoms');
+        await context.sendText('Thank you.');
         context.typingOff();
     }
 }
@@ -86,7 +86,7 @@ async function HandleAskForPostalCode(context) {
     });
 
     await context.typing(4000);
-    await context.sendText('We are building a analytics for everyone to use. Help us be better!\nWould you mind sharing your postal code?');
+    await context.sendText('Where do you live? Would you mind sharing your postal code?');
     context.typingOff();
 }
 
