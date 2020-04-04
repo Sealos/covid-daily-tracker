@@ -1,5 +1,4 @@
 const helpers = require('./helpers');
-const Analytics = require('./analytics');
 const RiskAssessment = require('./riskAssessment');
 
 // First time asking for symptoms
@@ -26,7 +25,7 @@ async function HandleNothingElse(context) {
 
     await context.typing(4000);
 
-    await context.sendText('Okay, I see.\nI will ask some questions to questions assess better');
+    await context.sendText('Okay, I see.\nI will ask some questions to assess you better');
 
     await context.typingOff();
 

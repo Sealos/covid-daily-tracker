@@ -26,8 +26,8 @@ const translations = {
     'cough_frequency_always': 'All the time',
 
     'difficulty_breathing_light': 'On light effort',
-    'difficulty_breathing_slightly': 'On light effort',
-    'difficulty_breathing_always': 'On light effort',
+    'difficulty_breathing_slightly': 'Slightly at rest',
+    'difficulty_breathing_always': 'All the time',
 
     'tiredness_ok': 'Manage to stay up',
     'tiredness_some': 'Can be up briefly',
@@ -96,6 +96,7 @@ function extractEvents(context, prefix) {
 }
 
 module.exports = {
+    translations,
     getButtonsContent,
     getQuickReply,
     extractEvents

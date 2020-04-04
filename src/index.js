@@ -2,6 +2,7 @@ const Analytics = require('./analytics');
 const GetStarted = require('./getStarted');
 const Symptoms = require('./symptoms');
 const Extra = require('./extraQuestions');
+const Risk = require('./riskAssessment');
 
 async function HandlePayloadTested(context) {
   await Analytics.HandleAskForPostalCode(context);
@@ -42,6 +43,10 @@ module.exports = async function App(context) {
     if (context.event.text == 'debug:extra') {
       await Extra.ExtraQuestion(context);
     }
+
+    if (context.event.text == 'debug:risk') {
+      await Risk.StartRiskAssessment(context);
+    }
   }
 
   if (context.event.isPayload) {
@@ -72,9 +77,19 @@ module.exports = async function App(context) {
       await Symptoms.HandlePayloadSymptomReport(context);
     }
 
+    if (payload.includes('USER_FEEDBACK_ASSESSMENT')) {
+      handled = true;
+      await Risk.ContinueRiskAssessment(context);
+    }
+
     if (payload.includes('USER_FEEDBACK_TESTED')) {
       handled = true;
-      await HandlePayloadTested(context);
+
+      if (payload == 'USER_FEEDBACK_TESTED_POSITIVE') {
+        await HandlePayloadTested(context);
+      } else {
+        await Risk.StartRiskAssessment(context);
+      }
     }
 
     if (!handled) {
