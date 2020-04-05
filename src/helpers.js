@@ -5,11 +5,11 @@ const translations = {
     'headache': 'Headache',
     'diarrhea': 'Diarrhea',
     'sore_throat': 'Sore throat',
-    'no_smell': 'Can\'t taste/ smell',
+    'no_smell': 'Can\'t taste/smell',
     'tiredness': 'Tiredness',
     'difficulty_breathing': 'Difficulty breathing',
     'something_else': 'Something else...',
-    'nothing_else': 'Nothing else.',
+    'nothing_else': 'Nothing else',
 
     // Risk assessment
     'fever_ok': 'Below 38C',

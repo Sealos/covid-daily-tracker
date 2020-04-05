@@ -103,7 +103,7 @@ async function AssessOngoingDiseases(context) {
 
     const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
 
-    await context.sendText('Do you have any of the following diseases with ongoing treatment?', { quickReplies: replies });
+    await context.sendText('Do you have any of the following diseases with ongoing treatment?\nHypertension, Cardiovascular disease, Lung disease, Cancer, Diabetes, Renal failure, Limited respiratory muscle function.', { quickReplies: replies });
 
     await context.typingOff();
 }

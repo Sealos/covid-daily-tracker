@@ -27,19 +27,6 @@ module.exports = {
             text: 'Hello {{user_first_name}}!',
           },
         ],
-        persistentMenu: [
-          {
-            locale: 'default',
-            composerInputDisabled: false,
-            callToActions: [
-              {
-                type: 'postback',
-                title: 'I think I might be sick',
-                payload: 'CARE_HELP',
-              },
-            ],
-          },
-        ],
       },
       fields: ['messages', 'messaging_postbacks'],
       path: '/webhooks/messenger',

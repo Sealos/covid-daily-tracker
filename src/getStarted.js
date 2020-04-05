@@ -20,7 +20,7 @@ async function GetStarted(context) {
 
     await context.typingOff();
 
-    await context.sendText('Nice to see you the first time! I might appear friendly like your private carer but I\'m actually a robot.');
+    await context.sendText('Nice to see you the first time! I might appear friendly like your private carer but I\'m actually a robot. If you would like to talk to our humans, please call 1177.');
 
     await context.typing(4000);
 

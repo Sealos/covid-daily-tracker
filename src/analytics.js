@@ -1,8 +1,9 @@
 
 async function TrackText(context) {
     const currentText = context.event.text;
+    const hasPayload = !!(context.event.payload);
 
-    if (currentText) {
+    if (currentText && !hasPayload) {
         let previousTexts = context.state.texts || [];
 
         const newText = {
@@ -90,7 +91,7 @@ async function HandleAskForPostalCode(context) {
     });
 
     await context.typing(4000);
-    await context.sendText('Where do you live? Would you mind sharing your postal code?\nWe are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
+    await context.sendText('Where do you live? Would you mind sharing your postal code?\n\nWe are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
 
     await context.typingOff();
 }

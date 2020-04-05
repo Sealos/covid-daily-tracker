@@ -53,7 +53,7 @@ async function HandlePayloadSymptomReport(context) {
             const waysToAskMore = [
                 'Anything else?',
                 'Or maybe any of these?',
-                'What about this ones?'
+                'What about these ones?'
             ];
 
             const text = waysToAskMore[Math.floor(Math.random() * waysToAskMore.length)];
