@@ -52,6 +52,24 @@ const translations = {
     'age_60': '60-69',
     'age_70': '70-79',
     'age_80': '80 or older',
+
+    // Extra questions
+    'activity_light_0_4': '0 - 4 hours',
+    'activity_light_4_8': '4 - 8 hours',
+    'activity_light_8_plus': '8+ hours',
+
+    'activity_intense_0_2': '0 - 2 hours',
+    'activity_intense_2_4': '2 - 4 hours',
+    'activity_intense_4_plus': '4+ hours',
+
+    'activity_stressed_1': '1',
+    'activity_stressed_2': '2',
+    'activity_stressed_3': '3',
+    'activity_stressed_4': '4',
+    'activity_stressed_5': '5',
+
+    'caregiver_yes': 'Yes',
+    'caregiver_no': 'No',
 }
 
 function generateOptions(array, prefix, postfix) {

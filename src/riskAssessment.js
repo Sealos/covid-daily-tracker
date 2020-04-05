@@ -1,9 +1,9 @@
-const Symptoms = require('./symptoms');
 const helpers = require('./helpers');
+const Extra = require('./extraQuestions');
 
 async function HandleAskForTested(context) {
     await context.typing(2000);
-    await context.sendText('Have you had a positive test result for covid-19?', {
+    await context.sendText('Have you had a positive test result for COVID-19?', {
         quickReplies: [
             {
                 contentType: 'text',
@@ -83,7 +83,7 @@ async function AssessRiskContact(context) {
 
     const replies = helpers.getQuickReply(['closeness_with_disease_no', 'closeness_with_disease_yes', 'closeness_with_disease_no_idea'], 'USER_FEEDBACK_ASSESSMENT_');
 
-    await context.sendText('Have you had close contact with someone infected with coronavirus (covid-19)?', { quickReplies: replies });
+    await context.sendText('Have you had close contact with someone infected with coronavirus (COVID-19)?', { quickReplies: replies });
 
     await context.typingOff();
 }
@@ -118,7 +118,7 @@ async function AssessCompromisedImmune(context) {
 
     const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
 
-    await context.sendText('Have you compromised your immune system?');
+    await context.sendText('Do you have a compromised immune system?');
 
     await context.typing(3000);
 
@@ -167,22 +167,43 @@ async function FinishAssessment(context) {
         await context.typing(2000);
         await context.sendText('If you have severe breathing problems, contact 112 instead.');
         await context.typing(2000);
-        await context.sendText('You can find more information on About the corona virus in Stockholm - 1177 Care guide');
-        await context.sendText('https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/');
+
+        const buttonContent = [
+            {
+                type: 'web_url',
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+                title: 'About the coronavirus in Stockholm - 1177 Care guide',
+            },
+        ];
+
+        await context.sendButtonTemplate('You can find more information below:', buttonContent);
         await context.typingOff();
     } else {
-        /*
-        [You can read more here:
-        Cold and flu - 1177 Care guide
-        How long to stay home and take care of yourself
-        About the corona virus in Stockholm - 1177 Care guide ] URLS?
-        */
 
-        await context.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
+        const buttonContent = [
+            {
+                type: 'web_url',
+                url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
+                title: 'Cold and flu - 1177 Care guide',
+            },
+            {
+                type: 'web_url',
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
+                title: 'How long to stay home and take care of yourself',
+            },
+            {
+                type: 'web_url',
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+                title: 'About the coronavirus in Stockholm - 1177 Care guide',
+            },
+        ];
+        const text = 'Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.';
+
+        await context.sendButtonTemplate(text, buttonContent);
         await context.typingOff();
+
+        await Extra.StartExtraQuestion(context);
     }
-
-
 }
 
 async function ContinueRiskAssessment(context) {

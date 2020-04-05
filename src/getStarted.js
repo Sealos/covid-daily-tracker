@@ -18,6 +18,12 @@ async function GetStarted(context) {
 
     await context.typing(4000);
 
+    await context.typingOff();
+
+    await context.sendText('Nice to see you the first time! I might appear friendly like your private carer but I\'m actually a robot.');
+
+    await context.typing(4000);
+
     await context.sendText("How are you feeling today?", {
         quickReplies: [
             {

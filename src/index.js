@@ -15,6 +15,32 @@ async function HandlePayloadHealthy(context) {
   context.typingOff();
 }
 
+async function HandleDebugCases(context) {
+  if (context.event.text == 'start' || context.event.text == 'Start') {
+    await GetStarted.GetStarted(context);
+  }
+
+  if (context.event.text.includes('debug:')) {
+    await GetStarted.ResetState(context);
+  }
+
+  if (context.event.text == 'debug:zip') {
+    await Analytics.HandleAskForPostalCode(context);
+  }
+
+  if (context.event.text == 'debug:sick') {
+    await Symptoms.HandlePayloadUserSick(context);
+  }
+
+  if (context.event.text == 'debug:risk') {
+    await Risk.StartRiskAssessment(context);
+  }
+
+  if (context.event.text == 'debug:extra') {
+    await Extra.StartExtraQuestion(context);
+  }
+}
+
 module.exports = async function App(context) {
 
   if (context.event.isText) {
@@ -25,29 +51,7 @@ module.exports = async function App(context) {
 
     // Check if waiting for postal number
 
-    if (context.event.text == 'start' || context.event.text == 'Start') {
-      await GetStarted.GetStarted(context);
-    }
-
-    if (context.event.text.includes('debug:')) {
-      await GetStarted.ResetState(context);
-    }
-
-    if (context.event.text == 'debug:zip') {
-      await Analytics.HandleAskForPostalCode(context);
-    }
-
-    if (context.event.text == 'debug:sick') {
-      await Symptoms.HandlePayloadUserSick(context);
-    }
-
-    if (context.event.text == 'debug:risk') {
-      await Risk.StartRiskAssessment(context);
-    }
-
-    if (context.event.text == 'debug:extra') {
-      await Extra.ExtraQuestion(context);
-    }
+    await HandleDebugCases(context);
   }
 
   if (context.event.isPayload) {
@@ -85,7 +89,6 @@ module.exports = async function App(context) {
 
     if (payload.includes('USER_FEEDBACK_TESTED')) {
       handled = true;
-
       await HandlePayloadTested(context);
     }
 
@@ -93,7 +96,6 @@ module.exports = async function App(context) {
       handled = true;
       await Extra.HandleContinueExtra(context);
     }
-
 
     if (!handled) {
       await context.sendText('I have a bug, I did not handle action: ' + payload);
