@@ -52,14 +52,14 @@ async function HandleZipCodeReceived(context, nextFlow) {
 
     const isValid = numbers.length == 5;
 
-    if (text.includes('no') || text.includes('No') || text.includes('stop')) {
+    if (text.startsWith('no') || text.startsWith('No') || text.startsWith('stop')) {
         await context.setState({
             nextAction: 'NONE',
         });
 
         await context.typing(2000);
         await context.sendText('No problem!');
-        context.typingOff();
+        await context.typingOff();
 
         nextFlow(context);
 
@@ -69,7 +69,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
     if (!isValid) {
         await context.typing(4000);
         await context.sendText('Hmm, I didn\'t understand.\nWhat is your postal code again?');
-        context.typingOff();
+        await context.typingOff();
     } else {
         await context.setState({
             nextAction: 'NONE',
@@ -78,7 +78,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
         // Handle zipcode
         await context.typing(4000);
         await context.sendText('Thank you.');
-        context.typingOff();
+        await context.typingOff();
 
         nextFlow(context);
     }
@@ -89,9 +89,14 @@ async function HandleAskForPostalCode(context) {
         nextAction: 'ASK_ZIPCODE',
     });
 
-    await context.typing(4000);
+    await context.typing(2000);
     await context.sendText('Where do you live? Would you mind sharing your postal code?');
-    context.typingOff();
+
+    await context.typing(4000);
+
+    await context.sendText('We are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
+
+    await context.typingOff();
 }
 
 

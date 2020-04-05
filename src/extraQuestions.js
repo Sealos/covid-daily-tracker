@@ -18,7 +18,8 @@ async function StartExtraQuestion(context) {
             },
         ]
     });
-    context.typingOff();
+
+    await context.typingOff();
 }
 
 async function AskActivityLight(context) {
@@ -40,7 +41,7 @@ async function AskActivityIntense(context) {
 
     const replies = helpers.getQuickReply(['activity_intense_0_2', 'activity_intense_2_4', 'activity_intense_4_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
 
-    await context.sendText('(2) hours high-intensity activity (such as weight training, HIIT or fast running)', { quickReplies: replies });
+    await context.sendText('(2) High-intensity activity (such as weight training, HIIT or fast running)', { quickReplies: replies });
 
     await context.typingOff();
 }
@@ -82,7 +83,7 @@ async function HandleContinueExtra(context) {
     if (payload === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
         await context.typing(2000);
         await context.sendText('That\s alright!');
-        context.typingOff();
+        await context.typingOff();
 
         await Goodbye.Goodbye(context);
 
@@ -92,7 +93,7 @@ async function HandleContinueExtra(context) {
     if (payload === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
         await context.typing(2000);
         await context.sendText('Thank you! Here it goes.');
-        context.typingOff();
+        await context.typingOff();
     }
 
     await HandleQuestionAnswers(context);
@@ -125,7 +126,7 @@ async function HandleQuestionAnswers(context) {
 
     if (previousAnswers.includes('activity_light_0_4') && currentAnswer.includes('activity_intense_0_2')) {
         await context.typing(4000);
-        await context.sendText('Keeping yourself physically active helps to support the immune system. Why not try to incorporate some physical activity in your daily routine, such as a brisk walk or jog, or doing some yoga at home?');
+        await context.sendText('Keeping yourself physically active helps to support the immune system. Why not try to incorporate some physical activity in your daily routines, such as a brisk walk or jog, or doing some yoga at home?');
         await context.typingOff();
     } else if (previousAnswers.includes('activity_light_8_plus') && currentAnswer.includes('activity_intense_4_plus')) {
         await context.typing(4000);
@@ -163,7 +164,7 @@ async function HandleQuestionAnswers(context) {
         await context.typingOff();
     } else if (currentAnswer.includes('caregiver_no')) {
         await context.typing(5000);
-        await context.sendText('I see. Try to keep an eye on the old folks in your neighborhood if you can.They are very vulnerable during this time, try to reach out to offer help if possible.');
+        await context.sendText('I see. Try to keep an eye on the old folks in your neighborhood if you can. They are very vulnerable during this time, try to reach out to offer help if possible.');
         await context.typingOff();
     }
 }
@@ -191,7 +192,6 @@ function extractPerformedExtraQuestions(context) {
 function extractExtraQuestionsAnswers(context) {
     return helpers.extractEvents(context, 'USER_FEEDBACK_CONTINUE_EXTRA');
 }
-
 
 module.exports = {
     StartExtraQuestion,

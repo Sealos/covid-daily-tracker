@@ -39,7 +39,7 @@ const translations = {
 
     'ongoing_none': 'None',
     'ongoing_hypertension': 'Hypertension',
-    'ongoing_cardiovascular': 'Cardiovascular disease',
+    'ongoing_cardiovascular': 'Cardiac disease',
     'ongoing_lung': 'Lung disease',
     'ongoing_cancer': 'Cancer',
     'ongoing_diabetes': 'Diabetes',

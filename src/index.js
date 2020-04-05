@@ -10,37 +10,45 @@ async function HandlePayloadTested(context) {
 
 async function HandlePayloadHealthy(context) {
   await context.typing(2000);
-  await context.sendText("That's great! Don't forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can! {link to XXX}");
+  await context.sendText("That's great! Don't forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!");
+  await context.typingOff();
 
-  context.typingOff();
+  await Risk.HandleAskForTested(context);
 }
 
 async function HandleDebugCases(context) {
-  if (context.event.text == 'start' || context.event.text == 'Start') {
+  const text = context.event.text;
+
+  if (text == 'start' ||
+    text == 'Start' ||
+    text.startsWith('Hi') ||
+    text.startsWith('hi') ||
+    text.startsWith('Hello') ||
+    text.startsWith('hello')) {
     await GetStarted.GetStarted(context);
   }
 
-  if (context.event.text.includes('debug:')) {
+  if (text.includes('debug:')) {
     await GetStarted.ResetState(context);
   }
 
-  if (context.event.text == 'debug:zip') {
+  if (text == 'debug:zip') {
     await Analytics.HandleAskForPostalCode(context);
   }
 
-  if (context.event.text == 'debug:sick') {
+  if (text == 'debug:sick') {
     await Symptoms.HandlePayloadUserSick(context);
   }
 
-  if (context.event.text == 'debug:risk') {
+  if (text == 'debug:risk') {
     await Risk.StartRiskAssessment(context);
   }
 
-  if (context.event.text == 'debug:extra') {
+  if (text == 'debug:extra') {
     await Extra.StartExtraQuestion(context);
   }
 
-  if (context.event.text == 'debug:reminder') {
+  if (text == 'debug:reminder') {
     await Risk.AskToCheckTomorrow(context);
   }
 }
@@ -50,12 +58,12 @@ module.exports = async function App(context) {
   if (context.event.isText) {
     await Analytics.TrackText(context);
 
+    await HandleDebugCases(context);
+
     // After zipcode, start risk assessment
     await Analytics.HandleZipCodeReceived(context, Risk.StartRiskAssessment);
 
     // Check if waiting for postal number
-
-    await HandleDebugCases(context);
   }
 
   if (context.event.isPayload) {

@@ -23,7 +23,7 @@ async function HandleAskForTested(context) {
         ],
     });
 
-    context.typingOff();
+    await context.typingOff();
 }
 
 async function AssessFever(context) {
@@ -227,7 +227,7 @@ async function HandleReminder(context) {
     await context.typing(2000);
 
     if (payload.includes('morning') || payload.includes('afternoon')) {
-        await context.sendText('Sure thing!')
+        await context.sendText('Sure thing! I will do.')
     } else {
         await context.sendText('Okay.')
     }

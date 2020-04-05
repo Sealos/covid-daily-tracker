@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const RiskAssessment = require('./riskAssessment');
+const Risk = require('./riskAssessment');
 
 // First time asking for symptoms
 async function HandlePayloadUserSick(context) {
@@ -29,7 +29,7 @@ async function HandleNothingElse(context) {
 
     await context.typingOff();
 
-    await RiskAssessment.HandleAskForTested(context);
+    await Risk.HandleAskForTested(context);
 }
 
 async function HandlePayloadSymptomReport(context) {
