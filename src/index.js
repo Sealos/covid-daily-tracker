@@ -39,6 +39,10 @@ async function HandleDebugCases(context) {
   if (context.event.text == 'debug:extra') {
     await Extra.StartExtraQuestion(context);
   }
+
+  if (context.event.text == 'debug:reminder') {
+    await Risk.AskToCheckTomorrow(context);
+  }
 }
 
 module.exports = async function App(context) {
@@ -95,6 +99,11 @@ module.exports = async function App(context) {
     if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
       handled = true;
       await Extra.HandleContinueExtra(context);
+    }
+
+    if (payload.includes('USER_FEEDBACK_REMINDER_')) {
+      handled = true;
+      await Risk.HandleReminder(context);
     }
 
     if (!handled) {

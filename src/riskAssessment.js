@@ -172,7 +172,7 @@ async function FinishAssessment(context) {
             {
                 type: 'web_url',
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-                title: 'About the coronavirus in Stockholm - 1177 Care guide',
+                title: 'About the coronavirus',
             },
         ];
 
@@ -180,30 +180,61 @@ async function FinishAssessment(context) {
         await context.typingOff();
     } else {
 
+        await context.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
+
+        await context.typing(2000);
+
         const buttonContent = [
             {
                 type: 'web_url',
                 url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
-                title: 'Cold and flu - 1177 Care guide',
+                title: 'Cold and flu',
             },
             {
                 type: 'web_url',
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
-                title: 'How long to stay home and take care of yourself',
+                title: 'About staying home',
             },
             {
                 type: 'web_url',
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-                title: 'About the coronavirus in Stockholm - 1177 Care guide',
+                title: 'About the coronavirus',
             },
         ];
-        const text = 'Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.';
+        const text = 'You can read more on 1177 Care guide as below:';
 
         await context.sendButtonTemplate(text, buttonContent);
         await context.typingOff();
-
-        await Extra.StartExtraQuestion(context);
     }
+
+    await AskToCheckTomorrow(context);
+}
+
+async function AskToCheckTomorrow(context) {
+
+    await context.typing(3000);
+
+    const replies = helpers.getQuickReply(['reminder_morning', 'reminder_afternoon', 'reminder_no'], 'USER_FEEDBACK_REMINDER_');
+
+    await context.sendText('Would you like me to check with you again tomorrow?', { quickReplies: replies });
+
+    await context.typingOff();
+}
+
+async function HandleReminder(context) {
+    const payload = context.event.payload.toLowerCase();
+
+    await context.typing(2000);
+
+    if (payload.includes('morning') || payload.includes('afternoon')) {
+        await context.sendText('Sure thing!')
+    } else {
+        await context.sendText('Okay.')
+    }
+
+    await context.typingOff();
+
+    await Extra.StartExtraQuestion(context);
 }
 
 async function ContinueRiskAssessment(context) {
@@ -322,5 +353,7 @@ function containsDangerousAnswer(context) {
 module.exports = {
     StartRiskAssessment,
     HandleAskForTested,
-    ContinueRiskAssessment
+    ContinueRiskAssessment,
+    HandleReminder,
+    AskToCheckTomorrow
 };

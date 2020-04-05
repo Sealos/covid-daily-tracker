@@ -53,6 +53,11 @@ const translations = {
     'age_70': '70-79',
     'age_80': '80 or older',
 
+    // Reminders
+    'reminder_morning': 'In the morning',
+    'reminder_afternoon': 'In the afternoon',
+    'reminder_no': 'No thanks',
+
     // Extra questions
     'activity_light_0_4': '0 - 4 hours',
     'activity_light_4_8': '4 - 8 hours',
