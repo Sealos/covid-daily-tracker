@@ -89,12 +89,8 @@ async function HandleAskForPostalCode(context) {
         nextAction: 'ASK_ZIPCODE',
     });
 
-    await context.typing(2000);
-    await context.sendText('Where do you live? Would you mind sharing your postal code?');
-
     await context.typing(4000);
-
-    await context.sendText('We are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
+    await context.sendText('Where do you live? Would you mind sharing your postal code?\nWe are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
 
     await context.typingOff();
 }
