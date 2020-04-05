@@ -20,7 +20,8 @@ module.exports = async function App(context) {
   if (context.event.isText) {
     await Analytics.TrackText(context);
 
-    await Analytics.HandleZipCodeReceived(context);
+    // After zipcode, start risk assessment
+    await Analytics.HandleZipCodeReceived(context, Risk.StartRiskAssessment);
 
     // Check if waiting for postal number
 
@@ -85,12 +86,7 @@ module.exports = async function App(context) {
     if (payload.includes('USER_FEEDBACK_TESTED')) {
       handled = true;
 
-      if (payload == 'USER_FEEDBACK_TESTED_POSITIVE') {
-        //@questions /gigi: I think we want the postal code no matter positive, negative, or suspected.
-        await HandlePayloadTested(context);
-      } else {
-        await Risk.StartRiskAssessment(context);
-      }
+      await HandlePayloadTested(context);
     }
 
     if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {

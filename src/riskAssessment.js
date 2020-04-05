@@ -112,8 +112,8 @@ async function AssessCompromisedImmune(context) {
     await context.typing(3000);
 
     const quickReplies = [
-        'compromised_immune_no',
         'compromised_immune_yes',
+        'compromised_immune_no',
     ];
 
     const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
@@ -153,7 +153,9 @@ async function StartRiskAssessment(context) {
 }
 
 async function FinishAssessment(context) {
-    const isHighRisk = containsDangerousAnswer(context) || getNumberOfHighRiskAnswers(context) >= 3;
+    const isDangerousCase = containsDangerousAnswer(context);
+    const hasManyHighRiskAnswers = getNumberOfHighRiskAnswers(context) >= 3;
+    const isHighRisk = isDangerousCase || hasManyHighRiskAnswers;
 
     await context.typing(2000);
     await context.sendText('One moment please...');
@@ -277,7 +279,7 @@ function getNumberOfHighRiskAnswers(context) {
     const answers = extractAssessmentsAnswers(context);
 
     const result = highRiskAnswers.filter(x => {
-        answers.includes(x)
+        return answers.includes(x)
     })
 
     return result.length;
@@ -286,11 +288,14 @@ function getNumberOfHighRiskAnswers(context) {
 function containsDangerousAnswer(context) {
     const answers = extractAssessmentsAnswers(context);
 
-    const result = highRiskAnswers.filter(x => {
-        answers.includes(x)
+    const result = [
+        'difficulty_breathing_slightly',
+        'difficulty_breathing_always',
+    ].filter(x => {
+        return answers.includes(x)
     })
 
-    return result.length;
+    return result.length > 0;
 }
 
 module.exports = {

@@ -37,7 +37,7 @@ async function TrackPayload(context) {
     }
 }
 
-async function HandleZipCodeReceived(context) {
+async function HandleZipCodeReceived(context, nextFlow) {
     const nextAction = context.state.nextAction || '';
 
     if (nextAction !== 'ASK_ZIPCODE') {
@@ -61,6 +61,8 @@ async function HandleZipCodeReceived(context) {
         await context.sendText('No problem!');
         context.typingOff();
 
+        nextFlow(context);
+
         return
     }
 
@@ -77,6 +79,8 @@ async function HandleZipCodeReceived(context) {
         await context.typing(4000);
         await context.sendText('Thank you.');
         context.typingOff();
+
+        nextFlow(context);
     }
 }
 
