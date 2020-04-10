@@ -19,15 +19,6 @@ async function HandlePayloadHealthy(context) {
 async function HandleDebugCases(context) {
   const text = context.event.text;
 
-  if (text == 'start' ||
-    text == 'Start' ||
-    text.startsWith('Hi') ||
-    text.startsWith('hi') ||
-    text.startsWith('Hello') ||
-    text.startsWith('hello')) {
-    await GetStarted.GetStarted(context);
-  }
-
   if (text.includes('debug:')) {
     await GetStarted.ResetState(context);
   }
@@ -55,7 +46,13 @@ async function HandleDebugCases(context) {
 
 module.exports = async function App(context) {
 
-  if (context.event.isText) {
+  if (context.event.isPayload) {
+    await Analytics.TrackPayload(context);
+
+    // Check if I have enough data to do assessment
+
+  }
+  else if (context.event.isText) {
     await Analytics.TrackText(context);
 
     await HandleDebugCases(context);
@@ -66,56 +63,54 @@ module.exports = async function App(context) {
     // Check if waiting for postal number
   }
 
-  if (context.event.isPayload) {
-    await Analytics.TrackPayload(context);
 
-    // Check if I have enough data to do assessment
+  // Routes 
+  const payload = context.event.isPayload && context.event.payload;
+  const text = context.event.isText && context.event.text;
+  
+  if (payload == 'GET_STARTED' ||
+    text &&
+    text == 'Start' ||
+    text.startsWith('Hi') ||
+    text.startsWith('hi') ||
+    text.startsWith('Hello') ||
+    text.startsWith('hello')) {
+    await GetStarted.GetStarted(context);
+  }
 
-    let handled = false;
+  else if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === GetStarted.callbacks.USER_FEEDBACK_IS_HEALTHY) {
+    await HandlePayloadHealthy(context);
+  }
 
-    const payload = context.event.payload;
-    if (payload == 'GET_STARTED') {
-      handled = true;
-      await GetStarted.GetStarted(context);
-    }
+  else if (payload == 'USER_FEEDBACK_IS_SICK') {
+    await Symptoms.HandlePayloadUserSick(context);
+  }
 
-    if (payload == 'USER_FEEDBACK_IS_HEALTHY') {
-      handled = true;
-      await HandlePayloadHealthy(context);
-    }
+  else if (payload.includes('USER_FEEDBACK_SICK')) {
+    await Symptoms.HandlePayloadSymptomReport(context);
+  }
 
-    if (payload == 'USER_FEEDBACK_IS_SICK') {
-      handled = true;
-      await Symptoms.HandlePayloadUserSick(context);
-    }
+  else if (payload.includes('USER_FEEDBACK_ASSESSMENT')) {
+    await Risk.ContinueRiskAssessment(context);
+  }
 
-    if (payload.includes('USER_FEEDBACK_SICK')) {
-      handled = true;
-      await Symptoms.HandlePayloadSymptomReport(context);
-    }
+  else if (payload.includes('USER_FEEDBACK_TESTED')) {
+    await HandlePayloadTested(context);
+  }
 
-    if (payload.includes('USER_FEEDBACK_ASSESSMENT')) {
-      handled = true;
-      await Risk.ContinueRiskAssessment(context);
-    }
+  else if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
+    await Extra.HandleContinueExtra(context);
+  }
 
-    if (payload.includes('USER_FEEDBACK_TESTED')) {
-      handled = true;
-      await HandlePayloadTested(context);
-    }
+  else if (payload.includes('USER_FEEDBACK_REMINDER_')) {
+    await Risk.HandleReminder(context);
+  }
 
-    if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
-      handled = true;
-      await Extra.HandleContinueExtra(context);
-    }
+  else if (payload) {
+    await context.sendText('I have a bug, I did not handle action: ' + payload);
+  }
 
-    if (payload.includes('USER_FEEDBACK_REMINDER_')) {
-      handled = true;
-      await Risk.HandleReminder(context);
-    }
-
-    if (!handled) {
-      await context.sendText('I have a bug, I did not handle action: ' + payload);
-    }
+  else {
+    await context.sendText('Sorry, I don\'t understand.');
   }
 };

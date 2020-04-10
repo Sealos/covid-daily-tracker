@@ -1,4 +1,12 @@
 const translations = {
+    GetStarted: {
+        hello: 'Hello!',
+        intro: 'Nice to see you the first time! (I might appear friendly like your private carer but I\'m actually a robot.)',
+        question: 'How are you feeling today?',
+        answer_healthy: 'Feeling healthy!',
+        answer_sick: 'Feeling sick',
+    },
+
     // Symptoms
     'fever': 'Fever',
     'cough': 'Cough',
