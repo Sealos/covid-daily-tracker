@@ -1,5 +1,5 @@
 const helpers = require('./helpers');
-const Risk = require('./riskAssessment');
+const Basic = require('./basicData');
 
 // First time asking for symptoms
 async function HandlePayloadUserSick(context) {
@@ -7,29 +7,29 @@ async function HandlePayloadUserSick(context) {
         nextAction: 'ASK_SYMPTOMS'
     });
 
-    await context.typing(4000);
+    await helpers.typing(context, 4000);
 
     const initialSymptoms = helpers.getButtonsContent(['fever', 'cough', 'difficulty_breathing'], 'USER_FEEDBACK_SICK_');
     const extraSymptoms = helpers.getQuickReply(['headache', 'diarrhea', 'sore_throat', 'no_smell', 'something_else'], 'USER_FEEDBACK_SICK_');
 
     await context.sendButtonTemplate('I’m sorry, what are your symptoms?', initialSymptoms);
 
-    await context.typing(1000);
+    await helpers.typing(context, 1000);
     await context.sendText('Or maybe any of these?', { quickReplies: extraSymptoms, });
 
-    await context.typingOff();
+    await helpers.typingOff(context);
 }
 
 async function HandleNothingElse(context) {
-    await context.typingOff();
+    await helpers.typingOff(context);
 
-    await context.typing(4000);
+    await helpers.typing(context, 4000);
 
     await context.sendText('Okay, I see.');
 
-    await context.typingOff();
+    await helpers.typingOff(context);
 
-    await Risk.HandleAskForTested(context);
+    await Basic.HandleAskForTested(context);
 }
 
 async function HandlePayloadSymptomReport(context) {
@@ -46,9 +46,9 @@ async function HandlePayloadSymptomReport(context) {
 
             const extraSymptoms = helpers.getQuickReply(symptomsToAsk.concat(['nothing_else']), 'USER_FEEDBACK_SICK_');
 
-            await context.typingOff();
+            await helpers.typingOff(context);
 
-            await context.typing(2000);
+            await helpers.typing(context, 2000);
 
             const waysToAskMore = [
                 'Anything else?',
@@ -60,7 +60,7 @@ async function HandlePayloadSymptomReport(context) {
 
             await context.sendText(text, { quickReplies: extraSymptoms, });
 
-            await context.typingOff();
+            await helpers.typingOff(context);
         } else {
             await HandleNothingElse(context);
         }

@@ -1,10 +1,18 @@
 const translations = {
     GetStarted: {
         hello: 'Hello!',
-        intro: 'Nice to see you the first time! (I might appear friendly like your private carer but I\'m actually a robot.)',
+        intro: 'Nice to see you the first time! (I might appear friendly like your private carer but I\'m a chatbot.)',
         question: 'How are you feeling today?',
         answer_healthy: 'Feeling healthy!',
         answer_sick: 'Feeling sick',
+        healthy_advise: "That's great! Don't forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!",
+    },
+
+    BasicData: {
+        tested_question: 'Have you had a positive test result for COVID-19?',
+        answer_positive: 'Yes, I have',
+        answer_no_likely: 'No, but it\'s likely',
+        answer_no: 'No',
     },
 
     // Symptoms
@@ -125,9 +133,26 @@ function extractEvents(context, prefix) {
     return currentSymptoms;
 }
 
+async function typing(context, milliseconds) {
+    if (context.platform === 'telegram') {
+        await context.sendChatAction('typing');
+        await context.typing(milliseconds);
+    } else {
+        await context.typing(milliseconds);
+    }
+}
+
+async function typingOff(context) {
+    if (context.platform === 'messenger') {
+        await context.typingOff();
+    }
+}
+
 module.exports = {
     translations,
     getButtonsContent,
     getQuickReply,
-    extractEvents
+    extractEvents,
+    typing,
+    typingOff,
 }
