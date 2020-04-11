@@ -1,9 +1,10 @@
 const helpers = require('./helpers');
 const Basic = require('./basicData');
 const Symptoms = require('./symptoms');
+const Analytics = require('./analytics');
 
 const translations = helpers.translations.GetStarted;
-const callbacks = {
+const callbackTitles = {
     USER_FEEDBACK_IS_HEALTHY: translations.answer_healthy,
     USER_FEEDBACK_IS_SICK: translations.answer_sick,
 };
@@ -12,7 +13,8 @@ async function ResetState(context) {
     return await context.setState({
         nextAction: 'NONE',
         payloads: [],
-        text: []
+        text: [],
+        events: [],
     });
 }
 
@@ -20,15 +22,15 @@ async function ResetState(context) {
 async function GetStarted(context) {
     await ResetState(context);
 
-    await helpers.typing(context, 500);
+    await helpers.typing(context, 400);
     await context.sendText(translations.hello);
     await helpers.typingOff(context);
 
-    await helpers.typing(context, 1000);
+    await helpers.typing(context, 800);
     await context.sendText(translations.intro);
     await helpers.typingOff(context);
 
-    await helpers.typing(context, 500);
+    await helpers.typing(context, 400);
 
     await context.setState({
         nextAction: 'GREETING_QUESTION',
@@ -48,12 +50,12 @@ async function GreetingQuestionFB(context) {
         quickReplies: [
             {
                 contentType: 'text',
-                title: callbacks.USER_FEEDBACK_IS_HEALTHY,
+                title: callbackTitles.USER_FEEDBACK_IS_HEALTHY,
                 payload: 'USER_FEEDBACK_IS_HEALTHY',
             },
             {
                 contentType: 'text',
-                title: callbacks.USER_FEEDBACK_IS_SICK,
+                title: callbackTitles.USER_FEEDBACK_IS_SICK,
                 payload: 'USER_FEEDBACK_IS_SICK',
             },
         ]
@@ -66,12 +68,12 @@ async function GreetingQuestionTG(context) {
             keyboard: [
                 [
                     {
-                        text: callbacks.USER_FEEDBACK_IS_HEALTHY,
+                        text: callbackTitles.USER_FEEDBACK_IS_HEALTHY,
                     },
                 ],
                 [
                     {
-                        text: callbacks.USER_FEEDBACK_IS_SICK,
+                        text: callbackTitles.USER_FEEDBACK_IS_SICK,
                     },
                 ],
             ],
@@ -93,12 +95,14 @@ async function HandleGreetingReply(context) {
         nextAction: 'NONE',
     });
 
-    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === callbacks.USER_FEEDBACK_IS_HEALTHY) {
+    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === callbackTitles.USER_FEEDBACK_IS_HEALTHY) {
         await HandlePayloadHealthy(context);
+        await Analytics.TrackEvent(context, 'USER_FEEDBACK_IS_HEALTHY');
     }
 
-    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === callbacks.USER_FEEDBACK_IS_SICK) {
+    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === callbackTitles.USER_FEEDBACK_IS_SICK) {
         await Symptoms.HandlePayloadUserSick(context);
+        await Analytics.TrackEvent(context, 'USER_FEEDBACK_IS_SICK');
     }
 
 }
@@ -115,5 +119,5 @@ module.exports = {
     GetStarted,
     ResetState,
     HandleGreetingReply,
-    callbacks,
+    callbackTitles,
 };

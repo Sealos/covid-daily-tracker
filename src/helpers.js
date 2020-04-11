@@ -1,18 +1,24 @@
 const translations = {
     GetStarted: {
         hello: 'Hello!',
-        intro: 'Nice to see you the first time! (I might appear friendly like your private carer but I\'m a chatbot.)',
+        intro: 'Nice to see you the first time! I’m your carer chatbot.',
         question: 'How are you feeling today?',
         answer_healthy: 'Feeling healthy!',
         answer_sick: 'Feeling sick',
-        healthy_advise: "That's great! Don't forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!",
+        healthy_advise: 'That’s great! Don’t forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!',
     },
 
     BasicData: {
         tested_question: 'Have you had a positive test result for COVID-19?',
         answer_positive: 'Yes, I have',
-        answer_no_likely: 'No, but it\'s likely',
+        answer_no_likely: 'No, but it’s likely',
         answer_no: 'No',
+    },
+
+    Symptoms: {
+        question: 'I’m sorry, what are your symptoms?',
+        question_further: 'Or maybe any of these?',
+        question_anything_else: 'Anything else?',
     },
 
     // Symptoms
@@ -21,7 +27,7 @@ const translations = {
     'headache': 'Headache',
     'diarrhea': 'Diarrhea',
     'sore_throat': 'Sore throat',
-    'no_smell': 'Can\'t taste/smell',
+    'no_smell': 'Can’t taste/smell',
     'tiredness': 'Tiredness',
     'difficulty_breathing': 'Difficulty breathing',
     'something_else': 'Something else...',
@@ -32,7 +38,7 @@ const translations = {
     'fever_medium': '38.0 - 39.4C',
     'fever_high': 'Above 39.4C',
 
-    'cough_dry': 'Yes, it\'s dry',
+    'cough_dry': 'Yes, it’s dry',
     'cough_sputum': 'No, I have sputum',
     'cough_phlegm': 'No, I have phlegm',
 
@@ -50,8 +56,8 @@ const translations = {
     'tiredness_bad': 'Can\'t get out of bed',
 
     'closeness_with_disease_no': 'No',
-    'closeness_with_disease_yes': 'Yes, it\'s confirmed',
-    'closeness_with_disease_no_idea': 'I don\'t know',
+    'closeness_with_disease_yes': 'Yes, it’s confirmed',
+    'closeness_with_disease_no_idea': 'I don’t know',
 
     'ongoing_none': 'None',
     'ongoing_hypertension': 'Hypertension',
@@ -93,6 +99,7 @@ const translations = {
     'caregiver_no': 'No',
 }
 
+//TODO: rename to show FB-exclusive
 function generateOptions(array, prefix, postfix) {
     return array.map(x => {
         return {
@@ -123,14 +130,43 @@ function getQuickReply(array, prefix, postfix) {
     });
 }
 
+
+function makeKeyboardTG(array, columnCount, selectedIds) {
+    const buttons = array.map(x => {
+        const isSelected = selectedIds && selectedIds.indexOf(x) != -1 || false;
+        return {
+            id: x,
+            text: (isSelected ? '✅' : '') + translations[x],
+        }
+    });
+
+    // then add each button to row
+    return buttons.reduce((acc, x, idx) => {
+        if (columnCount && idx % columnCount !== 0) {
+            const currRow = acc.pop();
+            currRow.push(x);
+            acc.push(currRow);
+        } else {
+            acc.push([x]);
+        }
+
+        return acc;
+    }, []);
+
+}
+
 function extractEvents(context, prefix) {
-    const state = context.state.payloads || [];
+    const state = context.state.events || [];
 
     const currentSymptoms = state
         .filter(x => x.event.includes(prefix))
         .map(x => x.event.replace(prefix + '_', '').toLowerCase());
 
     return currentSymptoms;
+}
+
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
 }
 
 async function typing(context, milliseconds) {
@@ -152,7 +188,9 @@ module.exports = {
     translations,
     getButtonsContent,
     getQuickReply,
+    makeKeyboardTG,
     extractEvents,
+    getKeyByValue,
     typing,
     typingOff,
 }

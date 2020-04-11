@@ -9,7 +9,11 @@ const Basic = require('./basicData');
 async function HandleDebugCases(context) {
     const text = context.event.text;
 
-    if (text.includes('debug:')) {
+    if (text === 'debug:state') {
+        console.log(context.state);
+        await context.sendText(context.state);
+    }
+    else if (text.includes('debug:')) {
         await GetStarted.ResetState(context);
     }
 
@@ -69,7 +73,7 @@ module.exports = async function App(context) {
         await GetStarted.HandleGreetingReply(context);
     }
 
-    else if (payload.includes('USER_FEEDBACK_SICK')) {
+    else if (nextAction === 'ASK_SYMPTOMS' || payload.includes('USER_FEEDBACK_SICK')) {
         await Symptoms.HandlePayloadSymptomReport(context);
     }
 

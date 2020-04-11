@@ -1,5 +1,27 @@
 const helpers = require('./helpers');
 const Basic = require('./basicData');
+const Analytics = require('./analytics');
+
+const translations = helpers.translations;
+const allValidSymptoms = [
+    'fever',
+    'cough',
+    'difficulty_breathing',
+    'tiredness',
+    'headache',
+    'diarrhea',
+    'sore_throat',
+    'no_smell'
+];
+
+const callbackTitles = allValidSymptoms.reduce((acc, x) => {
+    acc[`USER_FEEDBACK_SICK_${x.toUpperCase()}`] = translations[x];
+    return acc;
+}, {
+    USER_FEEDBACK_SICK_SOMETHING_ELSE: translations.something_else,
+    USER_FEEDBACK_SICK_NOTHING_ELSE: translations.nothing_else,
+});
+
 
 // First time asking for symptoms
 async function HandlePayloadUserSick(context) {
@@ -7,20 +29,48 @@ async function HandlePayloadUserSick(context) {
         nextAction: 'ASK_SYMPTOMS'
     });
 
-    await helpers.typing(context, 4000);
+    const symptomOptions = [...allValidSymptoms, 'something_else'];
+    if (context.platform === 'telegram') {
+        await AskSymptomsTG(context, symptomOptions);
+    } else {
+        await AskSymptomsFB(context, symptomOptions);
+    }
 
-    const initialSymptoms = helpers.getButtonsContent(['fever', 'cough', 'difficulty_breathing'], 'USER_FEEDBACK_SICK_');
-    const extraSymptoms = helpers.getQuickReply(['headache', 'diarrhea', 'sore_throat', 'no_smell', 'something_else'], 'USER_FEEDBACK_SICK_');
+}
 
-    await context.sendButtonTemplate('I’m sorry, what are your symptoms?', initialSymptoms);
+async function AskSymptomsFB(context, symptomOptions) {
+    await helpers.typing(context, 500);
+    const initialSymptoms = helpers.getButtonsContent(symptomOptions.slice(0, 3), 'USER_FEEDBACK_SICK_');
+    const extraSymptoms = helpers.getQuickReply(symptomOptions.slice(3), 'USER_FEEDBACK_SICK_');
+
+    await context.sendButtonTemplate(translations.Symptoms.question, initialSymptoms);
 
     await helpers.typing(context, 1000);
-    await context.sendText('Or maybe any of these?', { quickReplies: extraSymptoms, });
+    await context.sendText(translations.Symptoms.question_further, { quickReplies: extraSymptoms, });
 
     await helpers.typingOff(context);
 }
 
+async function AskSymptomsTG(context, symptomOptions, selectedSymptoms) {
+    await helpers.typing(context, 500);
+
+    const isFirstAsk = selectedSymptoms ? false : true;
+    const question = isFirstAsk ? translations.Symptoms.question : translations.Symptoms.question_anything_else;
+
+    await context.sendText(question, {
+        replyMarkup: {
+            keyboard: helpers.makeKeyboardTG(symptomOptions, 2, selectedSymptoms),
+            resize_keyboard: true,
+        }
+    });
+
+}
+
 async function HandleNothingElse(context) {
+    await context.setState({
+        nextAction: 'NONE'
+    });
+
     await helpers.typingOff(context);
 
     await helpers.typing(context, 4000);
@@ -33,52 +83,52 @@ async function HandleNothingElse(context) {
 }
 
 async function HandlePayloadSymptomReport(context) {
-    const payload = context.event.payload;
+    const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
+    await Analytics.TrackEvent(context, eventKey);
 
-    if (payload == 'USER_FEEDBACK_SICK_NOTHING_ELSE') {
+    if (eventKey == 'USER_FEEDBACK_SICK_NOTHING_ELSE') {
         await HandleNothingElse(context);
     } else {
-        const currentSymptoms = extractSymptoms(context);
+        const selectedSymptoms = extractSymptoms(context);
 
-        const symptomsToAsk = remainingSymptoms(currentSymptoms);
+        const symptomsToAsk = remainingSymptoms(selectedSymptoms);
 
         if (symptomsToAsk.length > 0) {
-
-            const extraSymptoms = helpers.getQuickReply(symptomsToAsk.concat(['nothing_else']), 'USER_FEEDBACK_SICK_');
-
-            await helpers.typingOff(context);
-
-            await helpers.typing(context, 2000);
-
-            const waysToAskMore = [
-                'Anything else?',
-                'Or maybe any of these?',
-                'What about these ones?'
-            ];
-
-            const text = waysToAskMore[Math.floor(Math.random() * waysToAskMore.length)];
-
-            await context.sendText(text, { quickReplies: extraSymptoms, });
-
-            await helpers.typingOff(context);
+            if (context.platform === 'telegram') {
+                const symptomOptions = [...allValidSymptoms, 'something_else', 'nothing_else'];
+                await AskSymptomsTG(context, symptomOptions, selectedSymptoms);
+            } else {
+                await AskSymptomsFurtherFB(context, symptomsToAsk);
+            }
         } else {
             await HandleNothingElse(context);
         }
     }
 }
 
-function remainingSymptoms(currentSymptoms) {
-    const allValidSymptoms = [
-        'fever',
-        'cough',
-        'headache',
-        'diarrhea',
-        'tiredness',
-        'difficulty_breathing',
-        'sore_throat',
-        'no_smell'
+async function AskSymptomsFurtherFB(context, symptomsToAsk) {
+    const extraSymptoms = helpers.getQuickReply(symptomsToAsk.concat(['something_else']).concat(['nothing_else']), 'USER_FEEDBACK_SICK_');
+
+    await helpers.typingOff(context);
+
+    await helpers.typing(context, 2000);
+
+    const waysToAskMore = [
+        'Anything else?',
+        'Or maybe any of these?',
+        'What about these ones?'
     ];
 
+    const text = waysToAskMore[Math.floor(Math.random() * waysToAskMore.length)];
+
+    await context.sendText(text, { quickReplies: extraSymptoms, });
+
+    await helpers.typingOff(context);
+
+}
+
+
+function remainingSymptoms(currentSymptoms) {
     return allValidSymptoms.filter(x => !currentSymptoms.includes(x));
 }
 

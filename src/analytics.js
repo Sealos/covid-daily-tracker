@@ -11,9 +11,8 @@ async function Track(context) {
 
 async function TrackText(context) {
     const currentText = context.event.text;
-    const hasPayload = !!(context.event.payload);
 
-    if (currentText && !hasPayload) {
+    if (currentText) {
         let previousTexts = context.state.texts || [];
 
         const newText = {
@@ -48,6 +47,26 @@ async function TrackPayload(context) {
     }
 }
 
+async function TrackEvent(context, eventKey) {
+    const currentEvent = eventKey;
+
+    if (currentEvent) {
+        let previousEvents = context.state.events;
+
+        const newEvent = {
+            event: currentEvent,
+            date: new Date()
+        };
+
+        previousEvents.push(newEvent);
+
+        await context.setState({
+            events: previousEvents,
+        });
+    }
+}
+
 module.exports = {
     Track,
+    TrackEvent,
 };
