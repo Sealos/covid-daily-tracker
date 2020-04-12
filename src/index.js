@@ -73,7 +73,7 @@ module.exports = async function App(context) {
         await GetStarted.HandleGreetingReply(context);
     }
 
-    else if (nextAction === 'ASK_SYMPTOMS' || payload.includes('USER_FEEDBACK_SICK')) {
+    else if (nextAction === 'ASK_SYMPTOMS' || payload.includes('USER_FEEDBACK_SYMPTOM')) {
         await Symptoms.HandlePayloadSymptomReport(context);
     }
 

@@ -273,7 +273,7 @@ function extractAssessmentsAnswers(context) {
 }
 
 function extractSymptoms(context) {
-    return helpers.extractEvents(context, 'USER_FEEDBACK_SICK');
+    return helpers.extractEvents(context, 'USER_FEEDBACK_SYMPTOM');
 }
 
 const highRiskAnswers = [

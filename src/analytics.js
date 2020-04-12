@@ -47,7 +47,7 @@ async function TrackPayload(context) {
     }
 }
 
-async function TrackEvent(context, eventKey) {
+async function SaveData(context, eventKey, dataValue) {
     const currentEvent = eventKey;
 
     if (currentEvent) {
@@ -55,7 +55,8 @@ async function TrackEvent(context, eventKey) {
 
         const newEvent = {
             event: currentEvent,
-            date: new Date()
+            date: new Date(),
+            ...(dataValue ? { data: dataValue } : undefined)
         };
 
         previousEvents.push(newEvent);
@@ -68,5 +69,5 @@ async function TrackEvent(context, eventKey) {
 
 module.exports = {
     Track,
-    TrackEvent,
+    SaveData,
 };

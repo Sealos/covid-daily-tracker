@@ -71,7 +71,7 @@ async function HandlePayloadTested(context) {
     });
 
     const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
-    await Analytics.TrackEvent(context, eventKey);
+    await Analytics.SaveData(context, eventKey);
 
     await HandleAskForPostalCode(context);
 }
@@ -113,17 +113,19 @@ async function HandleZipCodeReceived(context, nextFlow) {
 
         nextFlow(context);
 
-        return
+        return;
     }
 
     if (!isValid) {
         await helpers.typing(context, 1000);
-        await context.sendText('Hmm, I didn\'t understand.\nWhat is your postal code again?');
+        await context.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
         await helpers.typingOff(context);
     } else {
         await context.setState({
             nextAction: 'NONE',
         });
+
+        await Analytics.SaveData(context, 'USER_FEEDBACK_POSTAL_CODE', numbers);
 
         // Handle zipcode
         await helpers.typing(context, 500);

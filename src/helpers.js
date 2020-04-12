@@ -18,7 +18,11 @@ const translations = {
     Symptoms: {
         question: 'I’m sorry, what are your symptoms?',
         question_further: 'Or maybe any of these?',
-        question_anything_else: 'Anything else?',
+        question_more_arr: [
+            'Anything else?',
+            'And?',
+            'Any more?',
+        ]
     },
 
     // Symptoms

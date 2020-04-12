@@ -97,12 +97,12 @@ async function HandleGreetingReply(context) {
 
     if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === callbackTitles.USER_FEEDBACK_IS_HEALTHY) {
         await HandlePayloadHealthy(context);
-        await Analytics.TrackEvent(context, 'USER_FEEDBACK_IS_HEALTHY');
+        await Analytics.SaveData(context, 'USER_FEEDBACK_IS_HEALTHY');
     }
 
     else if (payload === 'USER_FEEDBACK_IS_SICK' || text === callbackTitles.USER_FEEDBACK_IS_SICK) {
         await Symptoms.HandlePayloadUserSick(context);
-        await Analytics.TrackEvent(context, 'USER_FEEDBACK_IS_SICK');
+        await Analytics.SaveData(context, 'USER_FEEDBACK_IS_SICK');
     }
 
 }
