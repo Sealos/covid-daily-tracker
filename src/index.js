@@ -29,6 +29,10 @@ async function HandleDebugCases(context) {
         await Risk.StartRiskAssessment(context);
     }
 
+    if (text == 'debug:assessment') {
+        await Risk.FinishAssessment(context);
+    }
+
     if (text == 'debug:extra') {
         await Extra.StartExtraQuestion(context);
     }
@@ -55,10 +59,6 @@ module.exports = async function App(context) {
     const text = context.event.isText && context.event.text || '';
     const nextAction = context.state.nextAction || '';
 
-
-    // console.log(`event.isText: ${context.event.isText}, event.isEcho: ${context.event.isEcho}, event.isRead: ${context.event.isRead}, event.isDelivery: ${context.event.isDelivery}`);
-    console.log(`payload: ${payload}; text: ${text}; nextAction: ${nextAction}`);
-
     if (payload == 'GET_STARTED' ||
         text &&
         text == 'Start' ||
@@ -73,12 +73,8 @@ module.exports = async function App(context) {
         await GetStarted.HandleGreetingReply(context);
     }
 
-    else if (nextAction === 'ASK_SYMPTOMS' || payload.includes('USER_FEEDBACK_SYMPTOM')) {
+    else if (nextAction === 'ASK_SYMPTOMS') {
         await Symptoms.HandlePayloadSymptomReport(context);
-    }
-
-    else if (payload.includes('USER_FEEDBACK_ASSESSMENT')) {
-        await Risk.ContinueRiskAssessment(context);
     }
 
     else if (nextAction === 'ASK_TESTED') {
@@ -89,11 +85,15 @@ module.exports = async function App(context) {
         await Basic.HandleZipCodeReceived(context, Risk.StartRiskAssessment);
     }
 
+    else if (nextAction.includes('ASSESS_')) {
+        await Risk.HandleAssessmentReply(context);
+    }
+
     else if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
         await Extra.HandleContinueExtra(context);
     }
 
-    else if (payload.includes('USER_FEEDBACK_REMINDER_')) {
+    else if (nextAction === 'ASK_REMINDER') {
         await Risk.HandleReminder(context);
     }
 

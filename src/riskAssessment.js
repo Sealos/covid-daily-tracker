@@ -1,75 +1,41 @@
 const helpers = require('./helpers');
 const Extra = require('./extraQuestions');
+const Analytics = require('./analytics');
 
-const translations = helpers.translations.Risk;
-
-
-async function AssessFever(context) {
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['fever_ok', 'fever_medium', 'fever_high'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('How high is your body temperature?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessCough(context) {
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['cough_dry', 'cough_sputum', 'cough_phlegm'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('Is your cough dry?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessCoughFrequency(context) {
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['cough_frequency_sometimes', 'cough_frequency_often', 'cough_frequency_always'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('How frequently are you coughing?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessDifficultyBreathing(context) {
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['difficulty_breathing_light', 'difficulty_breathing_slightly', 'difficulty_breathing_always'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('When do you feel difficult breathing?\n❗If you have difficulty breathing, call 112!', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessTiredness(context) {
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['tiredness_ok', 'tiredness_some', 'tiredness_high', 'tiredness_bad'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('How tired do you feel?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessRiskContact(context) {
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.getQuickReply(['closeness_with_disease_no', 'closeness_with_disease_yes', 'closeness_with_disease_no_idea'], 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('Have you had close contact with someone infected with coronavirus (COVID-19)?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessOngoingDiseases(context) {
-    await helpers.typing(context, 2000);
-
-    const quickReplies = [
+const translations = helpers.translations;
+const assessmentReplies = {
+    fever: [
+        'fever_ok',
+        'fever_medium',
+        'fever_high'
+    ],
+    cough: [
+        'cough_dry',
+        'cough_sputum',
+        'cough_phlegm'
+    ],
+    cough_frequency: [
+        'cough_frequency_sometimes',
+        'cough_frequency_often',
+        'cough_frequency_always'
+    ],
+    difficulty_breathing: [
+        'difficulty_breathing_light',
+        'difficulty_breathing_slightly',
+        'difficulty_breathing_always'
+    ],
+    tiredness: [
+        'tiredness_ok',
+        'tiredness_some',
+        'tiredness_high',
+        'tiredness_bad'
+    ],
+    closeness_with_disease: [
+        'closeness_with_disease_no',
+        'closeness_with_disease_yes',
+        'closeness_with_disease_no_idea'
+    ],
+    ongoing: [
         'ongoing_none',
         'ongoing_hypertension',
         'ongoing_cardiovascular',
@@ -77,134 +43,431 @@ async function AssessOngoingDiseases(context) {
         'ongoing_cancer',
         'ongoing_diabetes',
         'ongoing_renal',
-    ];
-
-    const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('Do you have any of the following diseases with ongoing treatment?\nHypertension, Cardiovascular disease, Lung disease, Cancer, Diabetes, Renal failure, Limited respiratory muscle function.', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessCompromisedImmune(context) {
-    await helpers.typing(context, 3000);
-
-    const quickReplies = [
+    ],
+    compromised_immune: [
         'compromised_immune_yes',
         'compromised_immune_no',
-    ];
-
-    const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
-
-    await context.sendText('Do you have a compromised immune system?');
-
-    await helpers.typing(context, 3000);
-
-    await context.sendText('For example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like? \n\nHave you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system?', { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function AssessAge(context) {
-    await helpers.typing(context, 3000);
-
-    const quickReplies = [
+    ],
+    age: [
         'age_less_60',
         'age_60',
         'age_70',
         'age_80',
-    ];
+    ],
+};
+const assessmentCallbackTitles = {};
+for (let key in assessmentReplies) {
+    assessmentCallbackTitles[key] = assessmentReplies[key].reduce((acc, x) => {
+        acc[`USER_FEEDBACK_ASSESSMENT_${x.toUpperCase()}`] = translations[x];
+        return acc;
+    }, {});
+};
 
-    const replies = helpers.getQuickReply(quickReplies, 'USER_FEEDBACK_ASSESSMENT_');
+const reminderReplies = ['reminder_morning', 'reminder_afternoon', 'reminder_no'];
+const reminderCallbackTitles = reminderReplies.reduce((acc, x) => {
+    acc[`USER_FEEDBACK_REMINDER_${x.toUpperCase()}`] = translations[x];
+    return acc;
+}, {});
 
-    await context.sendText('How old are you?', { quickReplies: replies });
+
+async function AssessFeverTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_FEVER'
+    });
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_fever, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.fever)
+    });
+}
+
+async function AssessFeverFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_FEVER'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.fever, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_fever, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessCoughTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COUGH'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_cough, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.cough)
+    });
+}
+
+async function AssessCoughFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COUGH'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.cough, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_cough, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessCoughFrequencyTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COUGH_FREQUENCY'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_cough_frequency, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.cough_frequency)
+    });
+}
+
+async function AssessCoughFrequencyFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COUGH_FREQUENCY'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.cough_frequency, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_cough_frequency, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessDifficultyBreathingTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_DIFFICULTY_BREATHING'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_difficulty_breathing, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.difficulty_breathing)
+    });
+}
+
+async function AssessDifficultyBreathingFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_DIFFICULTY_BREATHING'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.difficulty_breathing, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_difficulty_breathing, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessTirednessTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_TIREDNESS'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_tiredness, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.tiredness)
+    });
+}
+
+async function AssessTirednessFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_TIREDNESS'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.tiredness, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_tiredness, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessRiskContactTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_CLOSENESS_WITH_DISEASE'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_closeness_with_disease, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.closeness_with_disease)
+    });
+}
+
+async function AssessRiskContactFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_CLOSENESS_WITH_DISEASE'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.closeness_with_disease, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_closeness_with_disease, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessOngoingDiseasesTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_ONGOING'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_ongoing, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.ongoing)
+    });
+}
+
+async function AssessOngoingDiseasesFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_ONGOING'
+    });
+
+    await helpers.typing(context, 2000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.ongoing, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_ongoing, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessCompromisedImmuneTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COMPROMISED_IMMUNE'
+    });
+
+    await helpers.typing(context, 800);
+
+    await context.sendText(translations.Risk.question_compromised_immune);
+
+    await helpers.typing(context, 800);
+
+    await context.sendText(translations.Risk.question_compromised_immune_example, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.compromised_immune)
+    });
+}
+
+async function AssessCompromisedImmuneFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_COMPROMISED_IMMUNE'
+    });
+
+    await helpers.typing(context, 3000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.compromised_immune, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_compromised_immune);
+
+    await helpers.typing(context, 3000);
+
+    await context.sendText(translations.Risk.question_compromised_immune_example, { quickReplies: replies });
+
+    await helpers.typingOff(context);
+}
+
+async function AssessAgeTG(context) {
+    await context.setState({
+        nextAction: 'ASSESS_AGE'
+    });
+
+    await helpers.typing(context, 500);
+
+    await context.sendText(translations.Risk.question_age, {
+        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.age)
+    });
+}
+
+async function AssessAgeFB(context) {
+    await context.setState({
+        nextAction: 'ASSESS_AGE'
+    });
+
+    await helpers.typing(context, 3000);
+
+    const replies = helpers.getQuickReply(assessmentReplies.age, 'USER_FEEDBACK_ASSESSMENT_');
+
+    await context.sendText(translations.Risk.question_age, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
 
 async function StartRiskAssessment(context) {
-    await helpers.typing(context, 3000);
+    await helpers.typing(context, 1000);
     await context.sendText('If it\'s okay, I am going to ask a few more questions to assess your situation to see if you can take care of yourself at home or if you need to contact the healthcare provider.');
     await helpers.typingOff(context);
 
-    ContinueRiskAssessment(context);
+    await ContinueRiskAssessment(context);
 }
 
 async function FinishAssessment(context) {
+    await context.setState({
+        nextAction: 'NONE'
+    });
+
     const isDangerousCase = containsDangerousAnswer(context);
     const hasManyHighRiskAnswers = getNumberOfHighRiskAnswers(context) >= 3;
     const isHighRisk = isDangerousCase || hasManyHighRiskAnswers;
 
-    await helpers.typing(context, 2000);
+    await helpers.typing(context, 500);
     await context.sendText('One moment please...');
-    await helpers.typing(context, 3000);
+    await helpers.typing(context, 1000);
 
     if (isHighRisk) {
-        await helpers.typing(context, 3000);
-        await context.sendText('Your situation is a bit worrying. Please call 1177 for further telephone advice.\nRight now there may be long queues.');
-        await helpers.typing(context, 2000);
-        await context.sendText('If you have severe breathing problems, contact 112 instead.');
-        await helpers.typing(context, 2000);
+        await context.sendText(translations.Risk.result_high_risk);
+        await helpers.typing(context, 500);
+        await context.sendText(translations.Risk.result_high_risk_2);
+        await helpers.typing(context, 500);
 
-        const buttonContent = [
-            {
-                type: 'web_url',
-                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-                title: 'About the coronavirus',
-            },
-        ];
+        await helpers.routeByPlatform(context, SendHighRiskInfoTG, SendHighRiskInfoFB);
 
-        await context.sendButtonTemplate('You can find more information below:', buttonContent);
-        await helpers.typingOff(context);
     } else {
 
         await context.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
 
-        await helpers.typing(context, 2000);
+        await helpers.typing(context, 500);
 
-        const buttonContent = [
-            {
-                type: 'web_url',
-                url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
-                title: 'Cold and flu',
-            },
-            {
-                type: 'web_url',
-                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
-                title: 'About staying home',
-            },
-            {
-                type: 'web_url',
-                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-                title: 'About the coronavirus',
-            },
-        ];
-        const text = 'You can read more on 1177 Care guide as below:';
-
-        await context.sendButtonTemplate(text, buttonContent);
-        await helpers.typingOff(context);
+        await helpers.routeByPlatform(context, SendLowRiskInfoTG, SendLowRiskInfoFB);
     }
 
     await AskToCheckTomorrow(context);
 }
 
-async function AskToCheckTomorrow(context) {
+async function SendHighRiskInfoTG(context) {
+    const replyMarkup = {
+        inlineKeyboard: [
+            [{
+                text: translations.Risk.result_high_risk_info_link,
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+            }]
+        ]
+    };
 
+    await context.sendText(translations.Risk.result_high_risk_info_title, { replyMarkup: replyMarkup });
+
+}
+
+async function SendHighRiskInfoFB(context) {
+    const buttonContent = [
+        {
+            type: 'web_url',
+            url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+            title: translations.Risk.result_high_risk_info_link,
+        },
+    ];
+
+    await context.sendButtonTemplate(translations.Risk.result_high_risk_info_title, buttonContent);
+    await helpers.typingOff(context);
+}
+
+async function SendLowRiskInfoTG(context) {
+    const replyMarkup = {
+        inlineKeyboard: [
+            [{
+                text: translations.Risk.result_low_risk_info_link_1,
+                url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
+            }],
+            [{
+                text: translations.Risk.result_low_risk_info_link_2,
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
+            }],
+            [{
+                text: translations.Risk.result_low_risk_info_link_3,
+                url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+            }],
+        ]
+    };
+
+    await context.sendMessage(translations.Risk.result_low_risk_info_title, { replyMarkup: replyMarkup });
+
+}
+
+async function SendLowRiskInfoFB(context) {
+    const buttonContent = [
+        {
+            type: 'web_url',
+            url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
+            title: translations.Risk.result_low_risk_info_link_1,
+        },
+        {
+            type: 'web_url',
+            url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
+            title: translations.Risk.result_low_risk_info_link_2,
+        },
+        {
+            type: 'web_url',
+            url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
+            title: translations.Risk.result_low_risk_info_link_3,
+        },
+    ];
+    const text = translations.Risk.result_low_risk_info_title;
+
+    await context.sendButtonTemplate(text, buttonContent);
+    await helpers.typingOff(context);
+
+}
+
+async function AskToCheckTomorrow(context) {
+    await context.setState({
+        nextAction: 'ASK_REMINDER'
+    });
+
+    return await helpers.routeByPlatform(context, AskToCheckTomorrowTG, AskToCheckTomorrowFB);
+}
+
+async function AskToCheckTomorrowTG(context) {
     await helpers.typing(context, 3000);
 
-    const replies = helpers.getQuickReply(['reminder_morning', 'reminder_afternoon', 'reminder_no'], 'USER_FEEDBACK_REMINDER_');
+    await context.sendText(translations.Risk.question_reminder, {
+        replyMarkup: helpers.makeReplyMarkupTG(reminderReplies)
+    });
+}
 
-    await context.sendText('Would you like me to check with you again tomorrow?', { quickReplies: replies });
+async function AskToCheckTomorrowFB(context) {
+    await helpers.typing(context, 3000);
+
+    const replies = helpers.getQuickReply(reminderReplies, 'USER_FEEDBACK_REMINDER_');
+
+    await context.sendText(translations.Risk.question_reminder, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
 
 async function HandleReminder(context) {
-    const payload = context.event.payload.toLowerCase();
+    const nextAction = context.state.nextAction || '';
+    if (nextAction !== 'ASK_REMINDER') {
+        return;
+    }
 
-    await helpers.typing(context, 2000);
+    const eventKey = context.event.payload || helpers.getKeyByValue(reminderCallbackTitles, context.event.text) || '';
 
-    if (payload.includes('morning') || payload.includes('afternoon')) {
+    if (eventKey) {
+        console.log(eventKey);
+        await Analytics.SaveData(context, eventKey);
+    }
+
+    await helpers.typing(context, 500);
+
+    if ((eventKey.includes('MORNING') || eventKey.includes('AFTERNOON'))) {
         await context.sendText('Sure thing! I will do.')
     } else {
         await context.sendText('Okay.')
@@ -215,29 +478,48 @@ async function HandleReminder(context) {
     await Extra.StartExtraQuestion(context);
 }
 
+async function HandleAssessmentReply(context) {
+    const nextAction = context.state.nextAction || '';
+    if (!nextAction.includes('ASSESS_')) {
+        return;
+    }
+
+    const groupKey = nextAction.replace('ASSESS_', '').toLowerCase();
+    const eventKey = context.event.payload || helpers.getKeyByValue(assessmentCallbackTitles[groupKey], context.event.text);
+
+    if (eventKey) {
+        await Analytics.SaveData(context, eventKey);
+
+        await ContinueRiskAssessment(context);
+    } else {
+        await context.sendText(`Sorry, I don\'t understand. \n` + translations.Risk[`question_${groupKey}`]);
+    }
+
+}
+
 async function ContinueRiskAssessment(context) {
     const currentSymptoms = extractSymptoms(context);
 
     const performedAssessments = extractPerformedAssessments(context);
 
     if (currentSymptoms.includes('fever') && !performedAssessments.includes('fever')) {
-        await AssessFever(context);
+        await helpers.routeByPlatform(context, AssessFeverTG, AssessFeverFB);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough')) {
-        await AssessCough(context);
+        await helpers.routeByPlatform(context, AssessCoughTG, AssessCoughFB);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough_frequency')) {
-        await AssessCoughFrequency(context);
+        await helpers.routeByPlatform(context, AssessCoughFrequencyTG, AssessCoughFrequencyFB);
     } else if (currentSymptoms.includes('difficulty_breathing') && !performedAssessments.includes('difficulty_breathing')) {
-        await AssessDifficultyBreathing(context);
+        await helpers.routeByPlatform(context, AssessDifficultyBreathingTG, AssessDifficultyBreathingFB);
     } else if (currentSymptoms.includes('tiredness') && !performedAssessments.includes('tiredness')) {
-        await AssessTiredness(context);
+        await helpers.routeByPlatform(context, AssessTirednessTG, AssessTirednessFB);
     } else if (!performedAssessments.includes('closeness')) {
-        await AssessRiskContact(context);
+        await helpers.routeByPlatform(context, AssessRiskContactTG, AssessRiskContactFB);
     } else if (!performedAssessments.includes('ongoing')) {
-        await AssessOngoingDiseases(context);
+        await helpers.routeByPlatform(context, AssessOngoingDiseasesTG, AssessOngoingDiseasesFB);
     } else if (!performedAssessments.includes('compromised')) {
-        await AssessCompromisedImmune(context);
+        await helpers.routeByPlatform(context, AssessCompromisedImmuneTG, AssessCompromisedImmuneFB);
     } else if (!performedAssessments.includes('age')) {
-        await AssessAge(context);
+        await helpers.routeByPlatform(context, AssessAgeTG, AssessAgeFB);
     } else {
         await FinishAssessment(context);
     }
@@ -330,7 +612,9 @@ function containsDangerousAnswer(context) {
 
 module.exports = {
     StartRiskAssessment,
+    HandleAssessmentReply,
     ContinueRiskAssessment,
+    FinishAssessment,
     HandleReminder,
-    AskToCheckTomorrow
+    AskToCheckTomorrow,
 };

@@ -25,6 +25,28 @@ const translations = {
         ]
     },
 
+    Risk: {
+        question_fever: 'How high is your body temperature?',
+        question_cough: 'Is your cough dry?',
+        question_cough_frequency: 'How frequently are you coughing?',
+        question_difficulty_breathing: 'When do you feel difficult breathing?\n❗If you have difficulty breathing, call 112!',
+        question_tiredness: 'How tired do you feel?',
+        question_closeness_with_disease: 'Have you had close contact with someone infected with coronavirus (COVID-19)?',
+        question_ongoing: 'Do you have any of the following diseases with ongoing treatment?\nHypertension, Cardiovascular disease, Lung disease, Cancer, Diabetes, Renal failure, Limited respiratory muscle function.',
+        question_compromised_immune: 'Do you have a compromised immune system?',
+        question_compromised_immune_example: 'For example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like? \n\nHave you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system?',
+        question_age: 'How old are you?',
+        result_high_risk: 'Your situation is a bit worrying. Please call 1177 for further telephone advice.\nRight now there may be long queues.',
+        result_high_risk_2: 'If you have severe breathing problems, contact 112 instead.',
+        result_high_risk_info_title: 'You can find more information below:',
+        result_high_risk_info_link: 'About the coronavirus',
+        result_low_risk_info_title: 'You can read more on 1177 Care guide as below:',
+        result_low_risk_info_link_1: 'Cold and flu',
+        result_low_risk_info_link_2: 'About staying home',
+        result_low_risk_info_link_3: 'About the coronavirus',
+        question_reminder: 'Would you like me to check with you again tomorrow?',
+    },
+
     // Symptoms
     'fever': 'Fever',
     'cough': 'Cough',
@@ -35,7 +57,7 @@ const translations = {
     'tiredness': 'Tiredness',
     'difficulty_breathing': 'Difficulty breathing',
     'something_else': 'Something else...',
-    'nothing_else': 'Nothing else',
+    'nothing_else': 'Nothing else.',
 
     // Risk assessment
     'fever_ok': 'Below 38C',
@@ -103,7 +125,7 @@ const translations = {
     'caregiver_no': 'No',
 }
 
-//TODO: rename to show FB-exclusive
+//Facebook messenger format
 function generateOptions(array, prefix, postfix) {
     return array.map(x => {
         return {
@@ -134,8 +156,16 @@ function getQuickReply(array, prefix, postfix) {
     });
 }
 
+//Telegram format
+function makeReplyMarkupTG(array) {
+    return {
+        keyboard: makeKeyboardTG(array),
+        resize_keyboard: true,
+    };
 
-function makeKeyboardTG(array, columnCount, selectedIds) {
+}
+
+function makeKeyboardTG(array, columnCount = 1, selectedIds = undefined) {
     const buttons = array.map(x => {
         const isSelected = selectedIds && selectedIds.indexOf(x) != -1 || false;
         return {
@@ -146,7 +176,7 @@ function makeKeyboardTG(array, columnCount, selectedIds) {
 
     // then add each button to row
     return buttons.reduce((acc, x, idx) => {
-        if (columnCount && idx % columnCount !== 0) {
+        if ((columnCount > 1) && (idx % columnCount !== 0)) {
             const currRow = acc.pop();
             currRow.push(x);
             acc.push(currRow);
@@ -188,13 +218,23 @@ async function typingOff(context) {
     }
 }
 
+async function routeByPlatform(context, functionTG, functionFB) {
+    if (context.platform === 'telegram') {
+        await functionTG(context);
+    } else {
+        await functionFB(context);
+    }
+}
+
 module.exports = {
     translations,
     getButtonsContent,
     getQuickReply,
     makeKeyboardTG,
+    makeReplyMarkupTG,
     extractEvents,
     getKeyByValue,
     typing,
     typingOff,
+    routeByPlatform,
 }

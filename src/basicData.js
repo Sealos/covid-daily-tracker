@@ -111,7 +111,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
         await context.sendText('No problem!');
         await helpers.typingOff(context);
 
-        nextFlow(context);
+        await nextFlow(context);
 
         return;
     }
@@ -133,7 +133,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
         await helpers.typingOff(context);
 
         //@TOFIX: only continue to RiskAssessment if "feeling sick." else "Goodbye"
-        nextFlow(context);
+        await nextFlow(context);
     }
 }
 
