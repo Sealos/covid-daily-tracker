@@ -18,7 +18,7 @@ async function HandleDebugCases(context) {
     }
 
     if (text == 'debug:zip') {
-        await Basic.HandleAskForPostalCode(context);
+        await Basic.AskForPostalCode(context);
     }
 
     if (text == 'debug:sick') {
@@ -82,7 +82,7 @@ module.exports = async function App(context) {
     }
 
     else if (nextAction === 'ASK_ZIPCODE') {
-        await Basic.HandleZipCodeReceived(context, Risk.StartRiskAssessment);
+        await Basic.HandleZipCodeReceived(context);
     }
 
     else if (nextAction.includes('ASSESS_')) {

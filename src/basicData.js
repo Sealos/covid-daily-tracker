@@ -1,5 +1,7 @@
 const helpers = require('./helpers');
 const Analytics = require('./analytics');
+const Extra = require('./extraQuestions');
+const Risk = require('./riskAssessment');
 
 const translations = helpers.translations.BasicData;
 const callbackTitles = {
@@ -60,10 +62,10 @@ async function HandlePayloadTested(context) {
     const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
     await Analytics.SaveEvent(context, eventKey);
 
-    await HandleAskForPostalCode(context);
+    await AskForPostalCode(context);
 }
 
-async function HandleAskForPostalCode(context) {
+async function AskForPostalCode(context) {
     await context.setState({
         nextAction: 'ASK_ZIPCODE',
     });
@@ -74,7 +76,7 @@ async function HandleAskForPostalCode(context) {
     await helpers.typingOff(context);
 }
 
-async function HandleZipCodeReceived(context, nextFlow) {
+async function HandleZipCodeReceived(context) {
     const nextAction = context.state.nextAction || '';
 
     if (nextAction !== 'ASK_ZIPCODE') {
@@ -97,17 +99,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
         await helpers.typing(context, 500);
         await context.sendText('No problem!');
         await helpers.typingOff(context);
-
-        await nextFlow(context);
-
-        return;
-    }
-
-    if (!isValid) {
-        await helpers.typing(context, 1000);
-        await context.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
-        await helpers.typingOff(context);
-    } else {
+    } else if (isValid) {
         await context.setState({
             nextAction: 'NONE',
         });
@@ -119,15 +111,26 @@ async function HandleZipCodeReceived(context, nextFlow) {
         await context.sendText('Thank you.');
         await helpers.typingOff(context);
 
-        //@TOFIX: only continue to RiskAssessment if "feeling sick." else "Goodbye"
-        await nextFlow(context);
+    } else {
+        await helpers.typing(context, 1000);
+        await context.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
+        await helpers.typingOff(context);
+        return;
     }
+
+    const isUserHealthy = helpers.extractEvents(context, 'USER_FEEDBACK_IS_HEALTHY').length > 0;
+    if (isUserHealthy) {
+        await Extra.StartExtraQuestion(context);
+    } else {
+        await Risk.StartRiskAssessment(context);
+    }
+
 }
 
 
 module.exports = {
     HandleAskForTested,
     HandlePayloadTested,
-    HandleAskForPostalCode,
+    AskForPostalCode,
     HandleZipCodeReceived,
 };

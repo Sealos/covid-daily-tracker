@@ -201,11 +201,11 @@ function makeKeyboardTG(buttonTitleArray, columnCount) {
 function extractEvents(context, prefix) {
     const state = context.state.events || [];
 
-    const currentSymptoms = state
+    const eventKeys = state
         .filter(x => x.event.includes(prefix))
         .map(x => x.event.replace(prefix + '_', '').toLowerCase());
 
-    return currentSymptoms;
+    return eventKeys;
 }
 
 function getKeyByValue(object, value) {
