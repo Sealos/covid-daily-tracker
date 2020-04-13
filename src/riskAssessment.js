@@ -1,41 +1,43 @@
 const helpers = require('./helpers');
-const Extra = require('./extraQuestions');
 const Analytics = require('./analytics');
+const Reminder = require('./reminder');
 
 const translations = helpers.translations.Risk;
-const assessmentReplies = {
-    fever: [
+
+const CALLBACK_KEY_PREFIX = 'USER_FEEDBACK_ASSESSMENT_';
+const REPLIES = {
+    FEVER: [
         'fever_ok',
         'fever_medium',
         'fever_high'
     ],
-    cough: [
+    COUGH: [
         'cough_dry',
         'cough_sputum',
         'cough_phlegm'
     ],
-    cough_frequency: [
+    COUGH_FREQUENCY: [
         'cough_frequency_sometimes',
         'cough_frequency_often',
         'cough_frequency_always'
     ],
-    difficulty_breathing: [
+    DIFFICULTY_BREATHING: [
         'difficulty_breathing_light',
         'difficulty_breathing_slightly',
         'difficulty_breathing_always'
     ],
-    tiredness: [
+    TIREDNESS: [
         'tiredness_ok',
         'tiredness_some',
         'tiredness_high',
         'tiredness_bad'
     ],
-    closeness_with_disease: [
-        'closeness_with_disease_no',
-        'closeness_with_disease_yes',
-        'closeness_with_disease_no_idea'
+    CONTACT: [
+        'contact_no',
+        'contact_yes',
+        'contact_no_idea'
     ],
-    ongoing: [
+    ONGOING: [
         'ongoing_none',
         'ongoing_hypertension',
         'ongoing_cardiovascular',
@@ -44,276 +46,205 @@ const assessmentReplies = {
         'ongoing_diabetes',
         'ongoing_renal',
     ],
-    compromised_immune: [
-        'compromised_immune_yes',
-        'compromised_immune_no',
+    IMMUNE: [
+        'immune_yes',
+        'immune_no',
     ],
-    age: [
+    AGE: [
         'age_less_60',
         'age_60',
         'age_70',
         'age_80',
     ],
 };
-const assessmentCallbackTitles = {};
-for (let key in assessmentReplies) {
-    assessmentCallbackTitles[key] = assessmentReplies[key].reduce((acc, x) => {
-        acc[`USER_FEEDBACK_ASSESSMENT_${x.toUpperCase()}`] = translations[x];
-        return acc;
-    }, {});
-};
 
-const reminderReplies = ['reminder_morning', 'reminder_afternoon', 'reminder_no'];
-const reminderCallbackTitles = reminderReplies.reduce((acc, x) => {
-    acc[`USER_FEEDBACK_REMINDER_${x.toUpperCase()}`] = translations[x];
-    return acc;
-}, {});
-
-
-async function AssessFeverTG(context) {
+async function AssessFever(context) {
     await context.setState({
         nextAction: 'ASSESS_FEVER'
     });
+
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_fever, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.fever))
-    });
-}
-
-async function AssessFeverFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_FEVER'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.fever, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_fever, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_fever, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.FEVER)
+        });
+    } else {
+        await context.sendText(translations.question_fever, {
+            quickReplies: makeQuickRepliesFB(REPLIES.FEVER)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessCoughTG(context) {
+async function AssessCough(context) {
     await context.setState({
         nextAction: 'ASSESS_COUGH'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_cough, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough))
-    });
-}
-
-async function AssessCoughFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_COUGH'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.cough, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_cough, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_cough, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.COUGH)
+        });
+    } else {
+        await context.sendText(translations.question_cough, {
+            quickReplies: makeQuickRepliesFB(REPLIES.COUGH)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessCoughFrequencyTG(context) {
+async function AssessCoughFrequency(context) {
     await context.setState({
         nextAction: 'ASSESS_COUGH_FREQUENCY'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_cough_frequency, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough_frequency))
-    });
-}
-
-async function AssessCoughFrequencyFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_COUGH_FREQUENCY'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.cough_frequency, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_cough_frequency, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_cough_frequency, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.COUGH_FREQUENCY)
+        });
+    } else {
+        await context.sendText(translations.question_cough_frequency, {
+            quickReplies: makeQuickRepliesFB(REPLIES.COUGH_FREQUENCY)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessDifficultyBreathingTG(context) {
+async function AssessDifficultyBreathing(context) {
     await context.setState({
         nextAction: 'ASSESS_DIFFICULTY_BREATHING'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_difficulty_breathing, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.difficulty_breathing))
-    });
-}
-
-async function AssessDifficultyBreathingFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_DIFFICULTY_BREATHING'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.difficulty_breathing, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_difficulty_breathing, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_difficulty_breathing, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.DIFFICULTY_BREATHING)
+        });
+    } else {
+        await context.sendText(translations.question_difficulty_breathing, {
+            quickReplies: makeQuickRepliesFB(REPLIES.DIFFICULTY_BREATHING)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessTirednessTG(context) {
+async function AssessTiredness(context) {
     await context.setState({
         nextAction: 'ASSESS_TIREDNESS'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_tiredness, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.tiredness))
-    });
-}
-
-async function AssessTirednessFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_TIREDNESS'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.tiredness, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_tiredness, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_tiredness, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.TIREDNESS)
+        });
+    } else {
+        await context.sendText(translations.question_tiredness, {
+            quickReplies: makeQuickRepliesFB(REPLIES.TIREDNESS)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessRiskContactTG(context) {
+async function AssessRiskContact(context) {
     await context.setState({
-        nextAction: 'ASSESS_CLOSENESS_WITH_DISEASE'
+        nextAction: 'ASSESS_CONTACT'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_closeness_with_disease, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.closeness_with_disease))
-    });
-}
-
-async function AssessRiskContactFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_CLOSENESS_WITH_DISEASE'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.closeness_with_disease, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_closeness_with_disease, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_contact, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.CONTACT)
+        });
+    } else {
+        await context.sendText(translations.question_contact, {
+            quickReplies: makeQuickRepliesFB(REPLIES.CONTACT)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessOngoingDiseasesTG(context) {
+async function AssessOngoingDiseases(context) {
     await context.setState({
         nextAction: 'ASSESS_ONGOING'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_ongoing, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.ongoing))
-    });
-}
-
-async function AssessOngoingDiseasesFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_ONGOING'
-    });
-
-    await helpers.typing(context, 2000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.ongoing, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_ongoing, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_ongoing, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.ONGOING)
+        });
+    } else {
+        await context.sendText(translations.question_ongoing, {
+            quickReplies: makeQuickRepliesFB(REPLIES.ONGOING)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessCompromisedImmuneTG(context) {
+async function AssessCompromisedImmune(context) {
     await context.setState({
-        nextAction: 'ASSESS_COMPROMISED_IMMUNE'
+        nextAction: 'ASSESS_IMMUNE'
     });
 
     await helpers.typing(context, 800);
 
-    await context.sendText(translations.question_compromised_immune);
+    await context.sendText(translations.question_immune);
 
     await helpers.typing(context, 800);
 
-    await context.sendText(translations.question_compromised_immune_example, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.compromised_immune))
-    });
-}
-
-async function AssessCompromisedImmuneFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_COMPROMISED_IMMUNE'
-    });
-
-    await helpers.typing(context, 3000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.compromised_immune, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_compromised_immune);
-
-    await helpers.typing(context, 3000);
-
-    await context.sendText(translations.question_compromised_immune_example, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_immune_example, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.IMMUNE)
+        });
+    } else {
+        await context.sendText(translations.question_immune_example, {
+            quickReplies: makeQuickRepliesFB(REPLIES.IMMUNE)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
-async function AssessAgeTG(context) {
+async function AssessAge(context) {
     await context.setState({
         nextAction: 'ASSESS_AGE'
     });
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.question_age, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.age))
-    });
-}
-
-async function AssessAgeFB(context) {
-    await context.setState({
-        nextAction: 'ASSESS_AGE'
-    });
-
-    await helpers.typing(context, 3000);
-
-    const replies = helpers.makeQuickRepliesFB(assessmentReplies.age, 'USER_FEEDBACK_ASSESSMENT_', translations);
-
-    await context.sendText(translations.question_age, { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_age, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.AGE)
+        });
+    } else {
+        await context.sendText(translations.question_age, {
+            quickReplies: makeQuickRepliesFB(REPLIES.AGE)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function StartRiskAssessment(context) {
     await helpers.typing(context, 1000);
-    await context.sendText('If it\'s okay, I am going to ask a few more questions to assess your situation to see if you can take care of yourself at home or if you need to contact the healthcare provider.');
+    await context.sendText(translations.intro);
     await helpers.typingOff(context);
 
     await ContinueRiskAssessment(context);
@@ -349,7 +280,7 @@ async function FinishAssessment(context) {
         await helpers.routeByPlatform(context, SendLowRiskInfoFB, SendLowRiskInfoTG);
     }
 
-    await AskToCheckTomorrow(context);
+    await Reminder.AskToCheckTomorrow(context);
 }
 
 async function SendHighRiskInfoTG(context) {
@@ -426,72 +357,21 @@ async function SendLowRiskInfoFB(context) {
 
 }
 
-async function AskToCheckTomorrow(context) {
-    await context.setState({
-        nextAction: 'ASK_REMINDER'
-    });
-
-    return await helpers.routeByPlatform(context, AskToCheckTomorrowFB, AskToCheckTomorrowTG);
-}
-
-async function AskToCheckTomorrowTG(context) {
-    await helpers.typing(context, 3000);
-
-    await context.sendText(translations.question_reminder, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(reminderCallbackTitles))
-    });
-}
-
-async function AskToCheckTomorrowFB(context) {
-    await helpers.typing(context, 3000);
-
-    const replies = helpers.makeQuickRepliesFB(reminderReplies, 'USER_FEEDBACK_REMINDER_', translations);
-
-    await context.sendText(translations.question_reminder, { quickReplies: replies });
-
-    await helpers.typingOff(context);
-}
-
-async function HandleReminder(context) {
-    const nextAction = context.state.nextAction || '';
-    if (nextAction !== 'ASK_REMINDER') {
-        return;
-    }
-
-    const eventKey = context.event.payload || helpers.getKeyByValue(reminderCallbackTitles, context.event.text) || '';
-
-    if (eventKey) {
-        await Analytics.SaveEvent(context, eventKey);
-    }
-
-    await helpers.typing(context, 500);
-
-    if ((eventKey.includes('MORNING') || eventKey.includes('AFTERNOON'))) {
-        await context.sendText('Sure thing! I will do.')
-    } else {
-        await context.sendText('Okay.')
-    }
-
-    await helpers.typingOff(context);
-
-    await Extra.StartExtraQuestion(context);
-}
-
 async function HandleAssessmentReply(context) {
     const nextAction = context.state.nextAction || '';
     if (!nextAction.includes('ASSESS_')) {
         return;
     }
 
-    const groupKey = nextAction.replace('ASSESS_', '').toLowerCase();
-    const eventKey = context.event.payload || helpers.getKeyByValue(assessmentCallbackTitles[groupKey], context.event.text);
+    const questionKey = nextAction.replace('ASSESS_', '');
+    const eventKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES[questionKey]);
 
     if (eventKey) {
         await Analytics.SaveEvent(context, eventKey);
 
         await ContinueRiskAssessment(context);
     } else {
-        await context.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${groupKey}`]);
+        await context.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${questionKey}`]);
     }
 
 }
@@ -502,23 +382,23 @@ async function ContinueRiskAssessment(context) {
     const performedAssessments = extractPerformedAssessments(context);
 
     if (currentSymptoms.includes('fever') && !performedAssessments.includes('fever')) {
-        await helpers.routeByPlatform(context, AssessFeverFB, AssessFeverTG);
+        await AssessFever(context);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough')) {
-        await helpers.routeByPlatform(context, AssessCoughFB, AssessCoughTG);
+        await AssessCough(context);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough_frequency')) {
-        await helpers.routeByPlatform(context, AssessCoughFrequencyFB, AssessCoughFrequencyTG);
+        await AssessCoughFrequency(context);
     } else if (currentSymptoms.includes('difficulty_breathing') && !performedAssessments.includes('difficulty_breathing')) {
-        await helpers.routeByPlatform(context, AssessDifficultyBreathingFB, AssessDifficultyBreathingTG);
+        await AssessDifficultyBreathing(context);
     } else if (currentSymptoms.includes('tiredness') && !performedAssessments.includes('tiredness')) {
-        await helpers.routeByPlatform(context, AssessTirednessFB, AssessTirednessTG);
-    } else if (!performedAssessments.includes('closeness')) {
-        await helpers.routeByPlatform(context, AssessRiskContactFB, AssessRiskContactTG);
+        await AssessTiredness(context);
+    } else if (!performedAssessments.includes('contact')) {
+        await AssessRiskContact(context);
     } else if (!performedAssessments.includes('ongoing')) {
-        await helpers.routeByPlatform(context, AssessOngoingDiseasesFB, AssessOngoingDiseasesTG);
-    } else if (!performedAssessments.includes('compromised')) {
-        await helpers.routeByPlatform(context, AssessCompromisedImmuneFB, AssessCompromisedImmuneTG);
+        await AssessOngoingDiseases(context);
+    } else if (!performedAssessments.includes('immune')) {
+        await AssessCompromisedImmune(context);
     } else if (!performedAssessments.includes('age')) {
-        await helpers.routeByPlatform(context, AssessAgeFB, AssessAgeTG);
+        await AssessAge(context);
     } else {
         await FinishAssessment(context);
     }
@@ -530,9 +410,9 @@ const assessments = [
     'cough_frequency',
     'difficulty_breathing',
     'tiredness',
-    'closeness',
+    'contact',
     'ongoing',
-    'compromised',
+    'immune',
     'age',
 ]
 
@@ -557,6 +437,18 @@ function extractSymptoms(context) {
     return helpers.extractEvents(context, 'USER_FEEDBACK_SYMPTOM');
 }
 
+function makeQuickRepliesFB(repliesKeyArray) {
+    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
+}
+
+function makeReplyMarkupTG(repliesKeyArray) {
+    return helpers.makeReplyMarkupTG(helpers.translateArray(repliesKeyArray, translations));
+}
+
+function lookupCallbackKey(textValue, translationKeys) {
+    return helpers.lookupCallbackKey(textValue, translations, translationKeys, CALLBACK_KEY_PREFIX);
+}
+
 const highRiskAnswers = [
     'fever_medium',
     'fever_high',
@@ -570,7 +462,7 @@ const highRiskAnswers = [
     'tiredness_high',
     'tiredness_bad',
 
-    'closeness_with_disease_yes',
+    'contact_yes',
 
     'ongoing_hypertension',
     'ongoing_cardiovascular',
@@ -579,7 +471,7 @@ const highRiskAnswers = [
     'ongoing_diabetes',
     'ongoing_renal',
 
-    'compromised_immune_yes',
+    'immune_yes',
 
     'age_60',
     'age_70',
@@ -614,6 +506,4 @@ module.exports = {
     HandleAssessmentReply,
     ContinueRiskAssessment,
     FinishAssessment,
-    HandleReminder,
-    AskToCheckTomorrow,
 };

@@ -4,6 +4,7 @@ const Symptoms = require('./symptoms');
 const Extra = require('./extraQuestions');
 const Risk = require('./riskAssessment');
 const Basic = require('./basicData');
+const Reminder = require('./reminder');
 
 
 async function HandleDebugCases(context) {
@@ -38,7 +39,7 @@ async function HandleDebugCases(context) {
     }
 
     if (text == 'debug:reminder') {
-        await Risk.AskToCheckTomorrow(context);
+        await Reminder.AskToCheckTomorrow(context);
     }
 }
 
@@ -90,7 +91,7 @@ module.exports = async function App(context) {
     }
 
     else if (nextAction === 'ASK_REMINDER') {
-        await Risk.HandleReminder(context);
+        await Reminder.HandleReminder(context);
     }
 
     else if (nextAction === 'CONTINUE_EXTRA') {

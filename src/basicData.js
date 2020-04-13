@@ -4,10 +4,11 @@ const Extra = require('./extraQuestions');
 const Risk = require('./riskAssessment');
 
 const translations = helpers.translations.BasicData;
-const callbackTitles = {
-    USER_FEEDBACK_TESTED_POSITIVE: translations.answer_positive,
-    USER_FEEDBACK_TESTED_NO_LIKELY: translations.answer_no_likely,
-    USER_FEEDBACK_TESTED_NO: translations.answer_no,
+
+const CALLBACK_TITLES = {
+    USER_FEEDBACK_TESTED_POSITIVE: translations.positive,
+    USER_FEEDBACK_TESTED_NO_LIKELY: translations.no_likely,
+    USER_FEEDBACK_TESTED_NO: translations.no,
 };
 
 async function HandleAskForTested(context) {
@@ -15,43 +16,19 @@ async function HandleAskForTested(context) {
         nextAction: 'ASK_TESTED',
     });
 
-    if (context.platform === 'telegram') {
-        await HandleAskForTestedTG(context);
-    } else {
-        await HandleAskForTestedFB(context);
-    }
-}
-
-async function HandleAskForTestedFB(context) {
     await helpers.typing(context, 1000);
-    await context.sendText(translations.tested_question, {
-        quickReplies: [
-            {
-                contentType: 'text',
-                title: callbackTitles.USER_FEEDBACK_TESTED_POSITIVE,
-                payload: 'USER_FEEDBACK_TESTED_POSITIVE',
-            },
-            {
-                contentType: 'text',
-                title: callbackTitles.USER_FEEDBACK_TESTED_NO_LIKELY,
-                payload: 'USER_FEEDBACK_TESTED_NO_LIKELY',
-            },
-            {
-                contentType: 'text',
-                title: callbackTitles.USER_FEEDBACK_TESTED_NO,
-                payload: 'USER_FEEDBACK_TESTED_NO',
-            },
-        ],
-    });
+
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.tested_question, {
+            replyMarkup: helpers.makeReplyMarkupTG(Object.values(CALLBACK_TITLES))
+        });
+    } else {
+        await context.sendText(translations.tested_question, {
+            quickReplies: helpers.makeQuickRepliesFB(['positive', 'no_likely', 'no'], 'USER_FEEDBACK_TESTED_', translations)
+        });
+    }
 
     await helpers.typingOff(context);
-}
-
-async function HandleAskForTestedTG(context) {
-    await helpers.typing(context, 1000);
-    await context.sendText(translations.tested_question, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(callbackTitles))
-    });
 }
 
 async function HandlePayloadTested(context) {
@@ -59,7 +36,7 @@ async function HandlePayloadTested(context) {
         nextAction: 'NONE',
     });
 
-    const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
+    const eventKey = context.event.payload || helpers.getKeyByValue(CALLBACK_TITLES, context.event.text);
     await Analytics.SaveEvent(context, eventKey);
 
     await AskForPostalCode(context);

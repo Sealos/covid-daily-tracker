@@ -10,9 +10,9 @@ const translations = {
 
     BasicData: {
         tested_question: 'Have you had a positive test result for COVID-19?',
-        answer_positive: 'Yes, I have',
-        answer_no_likely: 'No, but it’s likely',
-        answer_no: 'No',
+        positive: 'Yes, I have',
+        no_likely: 'No, but it’s likely',
+        no: 'No',
     },
 
     Symptoms: {
@@ -36,15 +36,16 @@ const translations = {
     },
 
     Risk: {
+        intro: 'If it\'s okay, I am going to ask a few more questions to assess your situation to see if you can take care of yourself at home or if you need to contact the healthcare provider.',
         question_fever: 'How high is your body temperature?',
         question_cough: 'Is your cough dry?',
         question_cough_frequency: 'How frequently are you coughing?',
         question_difficulty_breathing: 'When do you feel difficult breathing?\n❗If you have difficulty breathing, call 112!',
         question_tiredness: 'How tired do you feel?',
-        question_closeness_with_disease: 'Have you had close contact with someone infected with coronavirus (COVID-19)?',
+        question_contact: 'Have you had close contact with someone infected with coronavirus (COVID-19)?',
         question_ongoing: 'Do you have any of the following diseases with ongoing treatment?\nHypertension, Cardiovascular disease, Lung disease, Cancer, Diabetes, Renal failure, Limited respiratory muscle function.',
-        question_compromised_immune: 'Do you have a compromised immune system?',
-        question_compromised_immune_example: 'For example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like? \n\nHave you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system?',
+        question_immune: 'Do you have a compromised immune system?',
+        question_immune_example: 'For example, do you medicate with cytostatic drugs, cortisone tablets, autoimmune disease drugs such as rheumatoid arthritis or the like? \n\nHave you previously had an organ transplant, had your spleen removed, had untreated HIV or other conditions that impair the immune system?',
         question_age: 'How old are you?',
         result_high_risk: 'Your situation is a bit worrying. Please call 1177 for further telephone advice.\nRight now there may be long queues.',
         result_high_risk_2: 'If you have severe breathing problems, contact 112 instead.',
@@ -54,7 +55,6 @@ const translations = {
         result_low_risk_info_link_1: 'Cold and flu',
         result_low_risk_info_link_2: 'About staying home',
         result_low_risk_info_link_3: 'About the coronavirus',
-        question_reminder: 'Would you like me to check with you again tomorrow?',
 
         // Risk assessment
         'fever_ok': 'Below 38C',
@@ -78,9 +78,9 @@ const translations = {
         'tiredness_high': 'Only up for toilet',
         'tiredness_bad': 'Can\'t get out of bed',
 
-        'closeness_with_disease_no': 'No',
-        'closeness_with_disease_yes': 'Yes, it’s confirmed',
-        'closeness_with_disease_no_idea': 'I don’t know',
+        'contact_no': 'No',
+        'contact_yes': 'Yes, it’s confirmed',
+        'contact_no_idea': 'I don’t know',
 
         'ongoing_none': 'None',
         'ongoing_hypertension': 'Hypertension',
@@ -90,13 +90,17 @@ const translations = {
         'ongoing_diabetes': 'Diabetes',
         'ongoing_renal': 'Renal failure',
 
-        'compromised_immune_yes': 'Yes',
-        'compromised_immune_no': 'No',
+        'immune_yes': 'Yes',
+        'immune_no': 'No',
 
         'age_less_60': 'Under 60',
         'age_60': '60-69',
         'age_70': '70-79',
         'age_80': '80 or older',
+    },
+
+    Reminder: {
+        question_reminder: 'Would you like me to check with you again tomorrow?',
 
         // Reminders
         'reminder_morning': 'In the morning',

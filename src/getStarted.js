@@ -4,7 +4,7 @@ const Symptoms = require('./symptoms');
 const Analytics = require('./analytics');
 
 const translations = helpers.translations.GetStarted;
-const callbackTitles = {
+const CALLBACK_TITLES = {
     USER_FEEDBACK_IS_HEALTHY: translations.answer_healthy,
     USER_FEEDBACK_IS_SICK: translations.answer_sick,
 };
@@ -36,11 +36,7 @@ async function GetStarted(context) {
         nextAction: 'GREETING_QUESTION',
     });
 
-    if (context.platform === 'telegram') {
-        await GreetingQuestionTG(context);
-    } else {
-        await GreetingQuestionFB(context);
-    }
+    helpers.routeByPlatform(context, GreetingQuestionFB, GreetingQuestionTG);
 
     await helpers.typingOff(context);
 }
@@ -50,12 +46,12 @@ async function GreetingQuestionFB(context) {
         quickReplies: [
             {
                 contentType: 'text',
-                title: callbackTitles.USER_FEEDBACK_IS_HEALTHY,
+                title: CALLBACK_TITLES.USER_FEEDBACK_IS_HEALTHY,
                 payload: 'USER_FEEDBACK_IS_HEALTHY',
             },
             {
                 contentType: 'text',
-                title: callbackTitles.USER_FEEDBACK_IS_SICK,
+                title: CALLBACK_TITLES.USER_FEEDBACK_IS_SICK,
                 payload: 'USER_FEEDBACK_IS_SICK',
             },
         ]
@@ -64,7 +60,7 @@ async function GreetingQuestionFB(context) {
 
 async function GreetingQuestionTG(context) {
     await context.sendText(translations.question, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(callbackTitles))
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(CALLBACK_TITLES))
     });
 }
 
@@ -81,12 +77,12 @@ async function HandleGreetingReply(context) {
         nextAction: 'NONE',
     });
 
-    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === callbackTitles.USER_FEEDBACK_IS_HEALTHY) {
+    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === CALLBACK_TITLES.USER_FEEDBACK_IS_HEALTHY) {
         await HandlePayloadHealthy(context);
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_IS_HEALTHY');
     }
 
-    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === callbackTitles.USER_FEEDBACK_IS_SICK) {
+    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === CALLBACK_TITLES.USER_FEEDBACK_IS_SICK) {
         await Symptoms.HandlePayloadUserSick(context);
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_IS_SICK');
     }
