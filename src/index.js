@@ -63,6 +63,7 @@ module.exports = async function App(context) {
     if (payload == 'GET_STARTED' ||
         text &&
         text == 'Start' ||
+        text == '/start' ||
         text.startsWith('Hi') ||
         text.startsWith('hi') ||
         text.startsWith('Hello') ||
