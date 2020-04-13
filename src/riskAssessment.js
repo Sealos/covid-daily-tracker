@@ -338,7 +338,7 @@ async function FinishAssessment(context) {
         await context.sendText(translations.result_high_risk_2);
         await helpers.typing(context, 500);
 
-        await helpers.routeByPlatform(context, SendHighRiskInfoTG, SendHighRiskInfoFB);
+        await helpers.routeByPlatform(context, SendHighRiskInfoFB, SendHighRiskInfoTG);
 
     } else {
 
@@ -346,7 +346,7 @@ async function FinishAssessment(context) {
 
         await helpers.typing(context, 500);
 
-        await helpers.routeByPlatform(context, SendLowRiskInfoTG, SendLowRiskInfoFB);
+        await helpers.routeByPlatform(context, SendLowRiskInfoFB, SendLowRiskInfoTG);
     }
 
     await AskToCheckTomorrow(context);
@@ -431,7 +431,7 @@ async function AskToCheckTomorrow(context) {
         nextAction: 'ASK_REMINDER'
     });
 
-    return await helpers.routeByPlatform(context, AskToCheckTomorrowTG, AskToCheckTomorrowFB);
+    return await helpers.routeByPlatform(context, AskToCheckTomorrowFB, AskToCheckTomorrowTG);
 }
 
 async function AskToCheckTomorrowTG(context) {
@@ -461,8 +461,7 @@ async function HandleReminder(context) {
     const eventKey = context.event.payload || helpers.getKeyByValue(reminderCallbackTitles, context.event.text) || '';
 
     if (eventKey) {
-        console.log(eventKey);
-        await Analytics.SaveData(context, eventKey);
+        await Analytics.SaveEvent(context, eventKey);
     }
 
     await helpers.typing(context, 500);
@@ -488,7 +487,7 @@ async function HandleAssessmentReply(context) {
     const eventKey = context.event.payload || helpers.getKeyByValue(assessmentCallbackTitles[groupKey], context.event.text);
 
     if (eventKey) {
-        await Analytics.SaveData(context, eventKey);
+        await Analytics.SaveEvent(context, eventKey);
 
         await ContinueRiskAssessment(context);
     } else {
@@ -503,23 +502,23 @@ async function ContinueRiskAssessment(context) {
     const performedAssessments = extractPerformedAssessments(context);
 
     if (currentSymptoms.includes('fever') && !performedAssessments.includes('fever')) {
-        await helpers.routeByPlatform(context, AssessFeverTG, AssessFeverFB);
+        await helpers.routeByPlatform(context, AssessFeverFB, AssessFeverTG);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough')) {
-        await helpers.routeByPlatform(context, AssessCoughTG, AssessCoughFB);
+        await helpers.routeByPlatform(context, AssessCoughFB, AssessCoughTG);
     } else if (currentSymptoms.includes('cough') && !performedAssessments.includes('cough_frequency')) {
-        await helpers.routeByPlatform(context, AssessCoughFrequencyTG, AssessCoughFrequencyFB);
+        await helpers.routeByPlatform(context, AssessCoughFrequencyFB, AssessCoughFrequencyTG);
     } else if (currentSymptoms.includes('difficulty_breathing') && !performedAssessments.includes('difficulty_breathing')) {
-        await helpers.routeByPlatform(context, AssessDifficultyBreathingTG, AssessDifficultyBreathingFB);
+        await helpers.routeByPlatform(context, AssessDifficultyBreathingFB, AssessDifficultyBreathingTG);
     } else if (currentSymptoms.includes('tiredness') && !performedAssessments.includes('tiredness')) {
-        await helpers.routeByPlatform(context, AssessTirednessTG, AssessTirednessFB);
+        await helpers.routeByPlatform(context, AssessTirednessFB, AssessTirednessTG);
     } else if (!performedAssessments.includes('closeness')) {
-        await helpers.routeByPlatform(context, AssessRiskContactTG, AssessRiskContactFB);
+        await helpers.routeByPlatform(context, AssessRiskContactFB, AssessRiskContactTG);
     } else if (!performedAssessments.includes('ongoing')) {
-        await helpers.routeByPlatform(context, AssessOngoingDiseasesTG, AssessOngoingDiseasesFB);
+        await helpers.routeByPlatform(context, AssessOngoingDiseasesFB, AssessOngoingDiseasesTG);
     } else if (!performedAssessments.includes('compromised')) {
-        await helpers.routeByPlatform(context, AssessCompromisedImmuneTG, AssessCompromisedImmuneFB);
+        await helpers.routeByPlatform(context, AssessCompromisedImmuneFB, AssessCompromisedImmuneTG);
     } else if (!performedAssessments.includes('age')) {
-        await helpers.routeByPlatform(context, AssessAgeTG, AssessAgeFB);
+        await helpers.routeByPlatform(context, AssessAgeFB, AssessAgeTG);
     } else {
         await FinishAssessment(context);
     }

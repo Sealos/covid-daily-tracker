@@ -106,6 +106,14 @@ const translations = {
 
     Extra: {
         question_continue_extra: 'I hope this is not too much to ask. In order to help scientists to research more about the virus, would you mind answering a few further questions?',
+        start_yes: 'Sure!',
+        start_no: 'Sorry, I can\'t',
+        question_activity: 'In an average week when you are not sick, how much physical activity do you tend to do?',
+        question_activity_light: '(1) Light-moderate activity (e.g. a brisk walk or bike ride)',
+        question_activity_intense: '(2) High-intensity activity (such as weight training, HIIT or fast running)',
+        question_stressed: 'How would you rate your general stress levels at the moment, on a scale of 1 - 5?\n\n1 - I am not at all stressed or anxious.\n5 - I feel very stressed and/or anxious',
+        question_caregiver: 'Are you a caregiver to a vulnerable person?',
+        thank_you: 'That\'s all I would like to ask for today. Thank you for helping us to combat this crisis.',
 
         // Extra questions
         'activity_light_0_4': '0 - 4 hours',
@@ -116,19 +124,19 @@ const translations = {
         'activity_intense_2_4': '2 - 4 hours',
         'activity_intense_4_plus': '4+ hours',
 
-        'activity_stressed_1': '1',
-        'activity_stressed_2': '2',
-        'activity_stressed_3': '3',
-        'activity_stressed_4': '4',
-        'activity_stressed_5': '5',
+        'stressed_1': '1',
+        'stressed_2': '2',
+        'stressed_3': '3',
+        'stressed_4': '4',
+        'stressed_5': '5',
 
         'caregiver_yes': 'Yes',
         'caregiver_no': 'No',
+
+        advise_caregiver_yes: 'As a caregiver you should take all the precautions you can to keep yourself well, such as keeping good hygiene, avoiding crowds, etc.\nYou should practice physical distancing but not social isolation. While keeping our older adults safe, we should also keep in mind that social isolation can have a negative impact on older people’s immunity and mental health. You may help them to access online services and outreach for spiritual solace and supports.',
+        advise_caregiver_no: 'I see. Try to keep an eye on the old folks in your neighborhood if you can. They are very vulnerable during this time, try to reach out to offer help if possible.',
     },
-
-
-
-}
+};
 
 //Facebook messenger format
 function makePayloadOptionsFB(keyArray, prefix, translations) {
@@ -204,6 +212,15 @@ function getKeyByValue(object, value) {
     return Object.keys(object).find(key => object[key] === value);
 }
 
+function lookupCallbackKey(text, dictionary, dictionaryKeyArray, prefix) {
+    const key = dictionaryKeyArray.find(x => dictionary[x] === text);
+    return key ? prefix + key.toUpperCase() : '';
+}
+
+function translateArray(keyArray, translations) {
+    return keyArray.map(x => translations[x]);
+}
+
 async function typing(context, milliseconds) {
     if (context.platform === 'telegram') {
         await context.sendChatAction('typing');
@@ -219,7 +236,7 @@ async function typingOff(context) {
     }
 }
 
-async function routeByPlatform(context, functionTG, functionFB) {
+async function routeByPlatform(context, functionFB, functionTG) {
     if (context.platform === 'telegram') {
         await functionTG(context);
     } else {
@@ -234,7 +251,9 @@ module.exports = {
     makeReplyMarkupTG,
     extractEvents,
     getKeyByValue,
+    lookupCallbackKey,
     typing,
     typingOff,
     routeByPlatform,
+    translateArray,
 }

@@ -4,78 +4,149 @@ const Goodbye = require('./goodbye');
 
 const translations = helpers.translations.Extra;
 
+const CALLBACK_KEY_PREFIX = 'USER_FEEDBACK_CONTINUE_EXTRA_';
+
+// replies's translation keys
+const REPLIES = {
+    START: [
+        'start_yes',
+        'start_no'
+    ],
+    ACTIVITY_LIGHT: [
+        'activity_light_0_4',
+        'activity_light_4_8',
+        'activity_light_8_plus',
+    ],
+    ACTIVITY_INTENSE: [
+        'activity_intense_0_2',
+        'activity_intense_2_4',
+        'activity_intense_4_plus'
+    ],
+    STRESSED: [
+        'stressed_1',
+        'stressed_2',
+        'stressed_3',
+        'stressed_4',
+        'stressed_5'
+    ],
+    CAREGIVER: [
+        'caregiver_yes',
+        'caregiver_no'
+    ],
+}
+
 async function StartExtraQuestion(context) {
     await context.setState({
         nextAction: 'CONTINUE_EXTRA'
     });
 
-    await helpers.typing(context, 4000);
-    await context.sendText(translations.question_continue_extra, {
-        quickReplies: [
-            {
-                contentType: 'text',
-                title: 'Sure!',
-                payload: 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES',
-            },
-            {
-                contentType: 'text',
-                title: 'Sorry, I can\'t',
-                payload: 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO',
-            },
-        ]
-    });
+    await helpers.typing(context, 1200);
+
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_continue_extra, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.START)
+        });
+    } else {
+        await context.sendText(translations.question_continue_extra, {
+            quickReplies: makeQuickRepliesFB(REPLIES.START)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function AskActivityLight(context) {
-    await helpers.typing(context, 2000);
+    await context.setState({
+        nextAction: 'EXTRA_ASK_ACTIVITY_LIGHT'
+    });
 
-    const replies = helpers.makeQuickRepliesFB(['activity_light_0_4', 'activity_light_4_8', 'activity_light_8_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
+    await helpers.typing(context, 1000);
 
-    await context.sendText('In an average week when you are not sick, how much physical activity do you tend to do?');
+    await context.sendText(translations.question_activity);
 
-    await helpers.typing(context, 2000);
+    await helpers.typing(context, 1000);
 
-    await context.sendText('(1) Light-moderate activity (e.g. a brisk walk or bike ride)', { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_activity_light, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.ACTIVITY_LIGHT)
+        });
+    } else {
+        await context.sendText(translations.question_activity_light, {
+            quickReplies: makeQuickRepliesFB(REPLIES.ACTIVITY_LIGHT)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function AskActivityIntense(context) {
-    await helpers.typing(context, 2000);
+    await context.setState({
+        nextAction: 'EXTRA_ASK_ACTIVITY_INTENSE'
+    });
 
-    const replies = helpers.makeQuickRepliesFB(['activity_intense_0_2', 'activity_intense_2_4', 'activity_intense_4_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
+    await helpers.typing(context, 1000);
 
-    await context.sendText('(2) High-intensity activity (such as weight training, HIIT or fast running)', { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_activity_intense, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.ACTIVITY_INTENSE)
+        });
+    } else {
+        await context.sendText(translations.question_activity_intense, {
+            quickReplies: makeQuickRepliesFB(REPLIES.ACTIVITY_INTENSE)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function AskIfStressed(context) {
-    await helpers.typing(context, 2000);
+    await context.setState({
+        nextAction: 'EXTRA_ASK_STRESSED'
+    });
 
-    const replies = helpers.makeQuickRepliesFB(['activity_stressed_1', 'activity_stressed_2', 'activity_stressed_3', 'activity_stressed_4', 'activity_stressed_5'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
+    await helpers.typing(context, 1000);
 
-    await context.sendText('How would you rate your general stress levels at the moment, on a scale of 1 - 5?\n\n1 - I am not at all stressed or anxious.\n5 - I feel very stressed and/or anxious', { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_stressed, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.STRESSED)
+        });
+    } else {
+        await context.sendText(translations.question_stressed, {
+            quickReplies: makeQuickRepliesFB(REPLIES.STRESSED)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function AskIfCaregiver(context) {
-    await helpers.typing(context, 2000);
+    await context.setState({
+        nextAction: 'EXTRA_ASK_CAREGIVER'
+    });
 
-    const replies = helpers.makeQuickRepliesFB(['caregiver_yes', 'caregiver_no'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
+    await helpers.typing(context, 1000);
 
-    await context.sendText('Are you a caregiver to a vulnerable person?', { quickReplies: replies });
+    if (context.platform === 'telegram') {
+        await context.sendText(translations.question_caregiver, {
+            replyMarkup: makeReplyMarkupTG(REPLIES.CAREGIVER)
+        });
+    } else {
+        await context.sendText(translations.question_caregiver, {
+            quickReplies: makeQuickRepliesFB(REPLIES.CAREGIVER)
+        });
+    }
 
     await helpers.typingOff(context);
 }
 
 async function FinishQuestions(context) {
+    await context.setState({
+        nextAction: 'NONE'
+    });
+
     await helpers.typing(context, 2000);
 
-    await context.sendText('That\'s all I would like to ask for today. Thank you for helping us to combat this crisis.');
+    await context.sendText(translations.thank_you);
 
     await helpers.typingOff(context);
 
@@ -83,12 +154,11 @@ async function FinishQuestions(context) {
 }
 
 async function HandleContinueExtra(context) {
+    const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES.START);
 
-    const payload = context.event.payload;
-
-    if (payload === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
-        await helpers.typing(context, 2000);
-        await context.sendText('That\s alright!');
+    if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
+        await helpers.typing(context, 500);
+        await context.sendText('That\'s alright!');
         await helpers.typingOff(context);
 
         await Goodbye.Goodbye(context);
@@ -96,14 +166,16 @@ async function HandleContinueExtra(context) {
         return;
     }
 
-    if (payload === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
-        await helpers.typing(context, 2000);
+    if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
+        await helpers.typing(context, 500);
         await context.sendText('Thank you! Here it goes.');
         await helpers.typingOff(context);
+
+        await AskExtraQuestions(context);
     }
+}
 
-    await HandleQuestionAnswers(context);
-
+async function AskExtraQuestions(context) {
     const performedExtraQuestions = extractPerformedExtraQuestions(context);
 
     if (!performedExtraQuestions.includes('activity_light')) {
@@ -119,63 +191,82 @@ async function HandleContinueExtra(context) {
     }
 }
 
-async function HandleQuestionAnswers(context) {
-    const payload = context.event.payload;
-
-    if (!payload) {
+async function HandleExtraReply(context) {
+    const nextAction = context.state.nextAction || '';
+    if (!nextAction.includes('EXTRA_ASK_')) {
         return;
     }
 
-    const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
-    await Analytics.SaveData(context, eventKey);
+    const questionKey = nextAction.replace('EXTRA_ASK_', '');
+    const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES[questionKey]);
+
+    if (!callbackKey) {
+        await context.sendText(`Sorry, I don\'t understand.`);
+        await AskExtraQuestions(context);
+        return;
+    }
+
+    await Analytics.SaveEvent(context, callbackKey);
 
     const previousAnswers = extractExtraQuestionsAnswers(context);
 
-    const currentAnswer = payload.toLowerCase();
+    const currentAnswer = callbackKey.toLowerCase();
 
     if (previousAnswers.includes('activity_light_0_4') && currentAnswer.includes('activity_intense_0_2')) {
-        await helpers.typing(context, 4000);
+        await helpers.typing(context, 1200);
         await context.sendText('Keeping yourself physically active helps to support the immune system. Why not try to incorporate some physical activity in your daily routines, such as a brisk walk or jog, or doing some yoga at home?');
         await helpers.typingOff(context);
     } else if (previousAnswers.includes('activity_light_8_plus') && currentAnswer.includes('activity_intense_4_plus')) {
-        await helpers.typing(context, 4000);
+        await helpers.typing(context, 1200);
         await context.sendText('Physical activity and hard training is great and will help to keep you fit and strong. However, make sure you also schedule sufficient recovery time.');
         await helpers.typingOff(context);
     } else if (currentAnswer.includes('activity_intense')) {
-        await helpers.typing(context, 2000);
+        await helpers.typing(context, 800);
         await context.sendText('Regular physical activity supports the immune system and keeps us fit and healthy. Keep it up!');
         await helpers.typingOff(context);
     }
 
     if (currentAnswer.includes('stressed_3') || currentAnswer.includes('stressed_4') || currentAnswer.includes('stressed_5')) {
-        await helpers.typing(context, 5000);
+        await helpers.typing(context, 1600);
         await context.sendText('Looking after our mental wellbeing is important during the pandemic.\nTry to avoid media sources if you find them stressful, take some time out in nature, or practice mindfulness meditation for 10 min each day.');
         await helpers.typingOff(context);
     } else if (currentAnswer.includes('stressed_1') || currentAnswer.includes('stressed_2')) {
-        await helpers.typing(context, 5000);
+        await helpers.typing(context, 1600);
         await context.sendText('Glad to know you\'re feeling fine! It\'s important to care for our mental wellbeing during the pandemic. Keep in mind that social distancing doesn\'t mean social isolation.Try to keep the social connection through digital means!');
         await helpers.typingOff(context);
     }
 
     if (currentAnswer.includes('caregiver_yes')) {
-        await helpers.typing(context, 5000);
+        await helpers.typing(context, 1200);
 
-        const buttonContent = [
-            {
+        const url = 'https://www.hopkinsmedicine.org/health/conditions-and-diseases/coronavirus/coronavirus-caregiving-for-the-elderly';
+        const urlTitle = 'Read more here';
+        if (context.platform === 'telegram') {
+            await context.sendText(translations.advise_caregiver_yes, {
+                replyMarkup: {
+                    inlineKeyboard: [[{
+                        text: urlTitle,
+                        url: url,
+                    }]]
+                }
+            });
+        } else {
+            await context.sendButtonTemplate(translations.advise_caregiver_yes, [{
                 type: 'web_url',
-                url: 'https://www.hopkinsmedicine.org/health/conditions-and-diseases/coronavirus/coronavirus-caregiving-for-the-elderly',
-                title: 'Read more here',
-            },
-        ];
-        const text = 'As a caregiver you should take all the precautions you can to keep yourself well, such as keeping good hygiene, avoiding crowds, etc.\nYou should practice physical distancing but not social isolation. While keeping our older adults safe, we should also keep in mind that social isolation can have a negative impact on older people’s immunity and mental health. You may help them to access online services and outreach for spiritual solace and supports.';
+                url: url,
+                title: urlTitle,
+            }]);
+        }
 
-        await context.sendButtonTemplate(text, buttonContent);
         await helpers.typingOff(context);
+
     } else if (currentAnswer.includes('caregiver_no')) {
-        await helpers.typing(context, 5000);
-        await context.sendText('I see. Try to keep an eye on the old folks in your neighborhood if you can. They are very vulnerable during this time, try to reach out to offer help if possible.');
+        await helpers.typing(context, 1200);
+        await context.sendText(translations.advise_caregiver_no);
         await helpers.typingOff(context);
     }
+
+    await AskExtraQuestions(context);
 }
 
 const extraQuestions = [
@@ -202,7 +293,20 @@ function extractExtraQuestionsAnswers(context) {
     return helpers.extractEvents(context, 'USER_FEEDBACK_CONTINUE_EXTRA');
 }
 
+function makeQuickRepliesFB(repliesKeyArray) {
+    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
+}
+
+function makeReplyMarkupTG(repliesKeyArray) {
+    return helpers.makeReplyMarkupTG(helpers.translateArray(repliesKeyArray, translations));
+}
+
+function lookupCallbackKey(textValue, translationKeys) {
+    return helpers.lookupCallbackKey(textValue, translations, translationKeys, CALLBACK_KEY_PREFIX);
+}
+
 module.exports = {
     StartExtraQuestion,
     HandleContinueExtra,
+    HandleExtraReply,
 };
