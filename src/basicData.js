@@ -58,7 +58,7 @@ async function HandlePayloadTested(context) {
     });
 
     const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
-    await Analytics.SaveData(context, eventKey);
+    await Analytics.SaveEvent(context, eventKey);
 
     await HandleAskForPostalCode(context);
 }
@@ -112,7 +112,7 @@ async function HandleZipCodeReceived(context, nextFlow) {
             nextAction: 'NONE',
         });
 
-        await Analytics.SaveData(context, 'USER_FEEDBACK_POSTAL_CODE', numbers);
+        await Analytics.SaveEvent(context, 'USER_FEEDBACK_POSTAL_CODE', numbers);
 
         // Handle zipcode
         await helpers.typing(context, 500);

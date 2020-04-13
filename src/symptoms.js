@@ -93,7 +93,7 @@ async function HandlePayloadSymptomReport(context) {
     if (eventKey == 'USER_FEEDBACK_SYMPTOM_NOTHING_ELSE') {
         await HandleNothingElse(context);
     } else {
-        await Analytics.SaveData(context, eventKey);
+        await Analytics.SaveEvent(context, eventKey);
 
         const selectedSymptoms = extractSymptoms(context);
 

@@ -93,8 +93,12 @@ module.exports = async function App(context) {
         await Risk.HandleReminder(context);
     }
 
-    else if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
+    else if (nextAction === 'CONTINUE_EXTRA') {
         await Extra.HandleContinueExtra(context);
+    }
+
+    else if (nextAction.includes('EXTRA_ASK_')) {
+        await Extra.HandleExtraReply(context);
     }
 
     else if (payload) {
@@ -102,6 +106,6 @@ module.exports = async function App(context) {
     }
 
     else {
-        await context.sendText('Sorry, I don\'t understand.');
+        await context.sendText('Sorry, I really don\'t understand.');
     }
 };
