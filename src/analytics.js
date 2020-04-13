@@ -47,7 +47,7 @@ async function TrackPayload(context) {
     }
 }
 
-async function SaveData(context, eventKey, dataValue) {
+async function SaveEvent(context, eventKey, dataValue) {
     const currentEvent = eventKey;
 
     if (currentEvent) {
@@ -69,5 +69,5 @@ async function SaveData(context, eventKey, dataValue) {
 
 module.exports = {
     Track,
-    SaveData,
+    SaveEvent,
 };
