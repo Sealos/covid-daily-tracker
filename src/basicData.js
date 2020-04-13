@@ -48,20 +48,7 @@ async function HandleAskForTestedFB(context) {
 async function HandleAskForTestedTG(context) {
     await helpers.typing(context, 1000);
     await context.sendText(translations.tested_question, {
-        replyMarkup: {
-            keyboard: [
-                [{
-                    text: callbackTitles.USER_FEEDBACK_TESTED_POSITIVE,
-                }],
-                [{
-                    text: callbackTitles.USER_FEEDBACK_TESTED_NO_LIKELY,
-                }],
-                [{
-                    text: callbackTitles.USER_FEEDBACK_TESTED_NO,
-                }],
-            ],
-            resize_keyboard: true,
-        }
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(callbackTitles))
     });
 }
 

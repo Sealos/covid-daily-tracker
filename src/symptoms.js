@@ -51,17 +51,19 @@ async function AskSymptomsFB(context, symptomOptions) {
     await helpers.typingOff(context);
 }
 
-async function AskSymptomsTG(context, symptomOptions, selectedSymptoms) {
+async function AskSymptomsTG(context, symptomKeys, selectedSymptomKeys = undefined) {
     await helpers.typing(context, 100);
 
-    const isFirstAsk = selectedSymptoms ? false : true;
+    const isFirstAsk = selectedSymptomKeys ? false : true;
     const question = isFirstAsk ? translations.Symptoms.question : randQuestionAskMore();
 
+    const symptomTitles = symptomKeys.map(x => {
+        const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
+        return (isSelected ? '✅' : '') + translations[x];
+    });
+
     await context.sendText(question, {
-        replyMarkup: {
-            keyboard: helpers.makeKeyboardTG(symptomOptions, 2, selectedSymptoms),
-            resize_keyboard: true,
-        }
+        replyMarkup: helpers.makeReplyMarkupTG(symptomTitles, 2, true)
     });
 
 }

@@ -64,21 +64,7 @@ async function GreetingQuestionFB(context) {
 
 async function GreetingQuestionTG(context) {
     await context.sendText(translations.question, {
-        replyMarkup: {
-            keyboard: [
-                [
-                    {
-                        text: callbackTitles.USER_FEEDBACK_IS_HEALTHY,
-                    },
-                ],
-                [
-                    {
-                        text: callbackTitles.USER_FEEDBACK_IS_SICK,
-                    },
-                ],
-            ],
-            resize_keyboard: true,
-        }
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(callbackTitles))
     });
 }
 

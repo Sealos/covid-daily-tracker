@@ -47,6 +47,12 @@ const translations = {
         question_reminder: 'Would you like me to check with you again tomorrow?',
     },
 
+    Extra: {
+        question_continue_extra: 'I hope this is not too much to ask. In order to help scientists to research more about the virus, would you mind answering a few further questions?',
+
+
+    },
+
     // Symptoms
     'fever': 'Fever',
     'cough': 'Cough',
@@ -157,20 +163,19 @@ function getQuickReply(array, prefix, postfix) {
 }
 
 //Telegram format
-function makeReplyMarkupTG(array) {
+function makeReplyMarkupTG(buttonTitles, columnCount = 1, keepKeyboard = false) {
     return {
-        keyboard: makeKeyboardTG(array),
+        keyboard: makeKeyboardTG(buttonTitles, columnCount),
         resize_keyboard: true,
+        one_time_keyboard: !keepKeyboard,
     };
 
 }
 
-function makeKeyboardTG(array, columnCount = 1, selectedIds = undefined) {
-    const buttons = array.map(x => {
-        const isSelected = selectedIds && selectedIds.indexOf(x) != -1 || false;
+function makeKeyboardTG(buttonTitles, columnCount) {
+    const buttons = buttonTitles.map(x => {
         return {
-            id: x,
-            text: (isSelected ? '✅' : '') + translations[x],
+            text: x,
         }
     });
 
@@ -230,7 +235,6 @@ module.exports = {
     translations,
     getButtonsContent,
     getQuickReply,
-    makeKeyboardTG,
     makeReplyMarkupTG,
     extractEvents,
     getKeyByValue,

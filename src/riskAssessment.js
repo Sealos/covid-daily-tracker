@@ -77,7 +77,7 @@ async function AssessFeverTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_fever, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.fever)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.fever))
     });
 }
 
@@ -103,7 +103,7 @@ async function AssessCoughTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_cough, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.cough)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough))
     });
 }
 
@@ -129,7 +129,7 @@ async function AssessCoughFrequencyTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_cough_frequency, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.cough_frequency)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough_frequency))
     });
 }
 
@@ -155,7 +155,7 @@ async function AssessDifficultyBreathingTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_difficulty_breathing, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.difficulty_breathing)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.difficulty_breathing))
     });
 }
 
@@ -181,7 +181,7 @@ async function AssessTirednessTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_tiredness, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.tiredness)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.tiredness))
     });
 }
 
@@ -207,7 +207,7 @@ async function AssessRiskContactTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_closeness_with_disease, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.closeness_with_disease)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.closeness_with_disease))
     });
 }
 
@@ -233,7 +233,7 @@ async function AssessOngoingDiseasesTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_ongoing, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.ongoing)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.ongoing))
     });
 }
 
@@ -263,7 +263,7 @@ async function AssessCompromisedImmuneTG(context) {
     await helpers.typing(context, 800);
 
     await context.sendText(translations.Risk.question_compromised_immune_example, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.compromised_immune)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.compromised_immune))
     });
 }
 
@@ -293,7 +293,7 @@ async function AssessAgeTG(context) {
     await helpers.typing(context, 500);
 
     await context.sendText(translations.Risk.question_age, {
-        replyMarkup: helpers.makeReplyMarkupTG(assessmentReplies.age)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.age))
     });
 }
 
@@ -438,7 +438,7 @@ async function AskToCheckTomorrowTG(context) {
     await helpers.typing(context, 3000);
 
     await context.sendText(translations.Risk.question_reminder, {
-        replyMarkup: helpers.makeReplyMarkupTG(reminderReplies)
+        replyMarkup: helpers.makeReplyMarkupTG(Object.values(reminderCallbackTitles))
     });
 }
 
