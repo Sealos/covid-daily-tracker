@@ -105,5 +105,4 @@ module.exports = {
     GetStarted,
     ResetState,
     HandleGreetingReply,
-    callbackTitles,
 };

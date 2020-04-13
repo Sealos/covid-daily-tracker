@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const Basic = require('./basicData');
 const Analytics = require('./analytics');
 
-const translations = helpers.translations;
+const translations = helpers.translations.Symptoms;
 const allValidSymptoms = [
     'fever',
     'cough',
@@ -40,13 +40,16 @@ async function HandlePayloadUserSick(context) {
 
 async function AskSymptomsFB(context, symptomOptions) {
     await helpers.typing(context, 500);
-    const initialSymptoms = helpers.getButtonsContent(symptomOptions.slice(0, 3), 'USER_FEEDBACK_SYMPTOM_');
-    const extraSymptoms = helpers.getQuickReply(symptomOptions.slice(3), 'USER_FEEDBACK_SYMPTOM_');
 
-    await context.sendButtonTemplate(translations.Symptoms.question, initialSymptoms);
+    const top3Symptoms = symptomOptions.slice(0, 3);
+    const restSymptoms = symptomOptions.slice(3);
+
+    await context.sendButtonTemplate(translations.question, helpers.makeButtonsFB(top3Symptoms, 'USER_FEEDBACK_SYMPTOM_', translations));
 
     await helpers.typing(context, 1000);
-    await context.sendText(translations.Symptoms.question_further, { quickReplies: extraSymptoms, });
+    await context.sendText(translations.question_further, {
+        quickReplies: helpers.makeQuickRepliesFB(restSymptoms, 'USER_FEEDBACK_SYMPTOM_', translations)
+    });
 
     await helpers.typingOff(context);
 }
@@ -55,7 +58,7 @@ async function AskSymptomsTG(context, symptomKeys, selectedSymptomKeys = undefin
     await helpers.typing(context, 100);
 
     const isFirstAsk = selectedSymptomKeys ? false : true;
-    const question = isFirstAsk ? translations.Symptoms.question : randQuestionAskMore();
+    const question = isFirstAsk ? translations.question : randQuestionAskMore();
 
     const symptomTitles = symptomKeys.map(x => {
         const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
@@ -110,7 +113,7 @@ async function HandlePayloadSymptomReport(context) {
 }
 
 async function AskSymptomsFurtherFB(context, symptomsToAsk) {
-    const extraSymptoms = helpers.getQuickReply(symptomsToAsk.concat(['something_else']).concat(['nothing_else']), 'USER_FEEDBACK_SYMPTOM_');
+    const extraSymptoms = helpers.makeQuickRepliesFB(symptomsToAsk.concat(['something_else']).concat(['nothing_else']), 'USER_FEEDBACK_SYMPTOM_', translations);
 
     await helpers.typingOff(context);
 
@@ -123,7 +126,7 @@ async function AskSymptomsFurtherFB(context, symptomsToAsk) {
 }
 
 function randQuestionAskMore() {
-    const questionsMore = translations.Symptoms.question_more_arr;
+    const questionsMore = translations.question_more_arr;
     return questionsMore[Math.floor(Math.random() * questionsMore.length)];
 }
 

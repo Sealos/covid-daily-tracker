@@ -1,10 +1,16 @@
 const helpers = require('./helpers');
+const Analytics = require('./analytics');
 const Goodbye = require('./goodbye');
 
+const translations = helpers.translations.Extra;
+
 async function StartExtraQuestion(context) {
+    await context.setState({
+        nextAction: 'CONTINUE_EXTRA'
+    });
 
     await helpers.typing(context, 4000);
-    await context.sendText('I hope this is not too much to ask. As we still don\'t know much about this virus yet, the scientists would desperately want to know more about this disease. Would you mind answering a few further questions for research purposes?\n\nThe data will only be collected anonymously.', {
+    await context.sendText(translations.question_continue_extra, {
         quickReplies: [
             {
                 contentType: 'text',
@@ -25,7 +31,7 @@ async function StartExtraQuestion(context) {
 async function AskActivityLight(context) {
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(['activity_light_0_4', 'activity_light_4_8', 'activity_light_8_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
+    const replies = helpers.makeQuickRepliesFB(['activity_light_0_4', 'activity_light_4_8', 'activity_light_8_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
 
     await context.sendText('In an average week when you are not sick, how much physical activity do you tend to do?');
 
@@ -39,7 +45,7 @@ async function AskActivityLight(context) {
 async function AskActivityIntense(context) {
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(['activity_intense_0_2', 'activity_intense_2_4', 'activity_intense_4_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
+    const replies = helpers.makeQuickRepliesFB(['activity_intense_0_2', 'activity_intense_2_4', 'activity_intense_4_plus'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
 
     await context.sendText('(2) High-intensity activity (such as weight training, HIIT or fast running)', { quickReplies: replies });
 
@@ -49,7 +55,7 @@ async function AskActivityIntense(context) {
 async function AskIfStressed(context) {
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(['activity_stressed_1', 'activity_stressed_2', 'activity_stressed_3', 'activity_stressed_4', 'activity_stressed_5'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
+    const replies = helpers.makeQuickRepliesFB(['activity_stressed_1', 'activity_stressed_2', 'activity_stressed_3', 'activity_stressed_4', 'activity_stressed_5'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
 
     await context.sendText('How would you rate your general stress levels at the moment, on a scale of 1 - 5?\n\n1 - I am not at all stressed or anxious.\n5 - I feel very stressed and/or anxious', { quickReplies: replies });
 
@@ -59,7 +65,7 @@ async function AskIfStressed(context) {
 async function AskIfCaregiver(context) {
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(['caregiver_yes', 'caregiver_no'], 'USER_FEEDBACK_CONTINUE_EXTRA_');
+    const replies = helpers.makeQuickRepliesFB(['caregiver_yes', 'caregiver_no'], 'USER_FEEDBACK_CONTINUE_EXTRA_', translations);
 
     await context.sendText('Are you a caregiver to a vulnerable person?', { quickReplies: replies });
 
@@ -119,6 +125,9 @@ async function HandleQuestionAnswers(context) {
     if (!payload) {
         return;
     }
+
+    const eventKey = context.event.payload || helpers.getKeyByValue(callbackTitles, context.event.text);
+    await Analytics.SaveData(context, eventKey);
 
     const previousAnswers = extractExtraQuestionsAnswers(context);
 

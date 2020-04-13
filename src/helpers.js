@@ -22,7 +22,17 @@ const translations = {
             'Anything else?',
             'And?',
             'Any more?',
-        ]
+        ],
+        'fever': 'Fever',
+        'cough': 'Cough',
+        'headache': 'Headache',
+        'diarrhea': 'Diarrhea',
+        'sore_throat': 'Sore throat',
+        'no_smell': 'Can’t taste/smell',
+        'tiredness': 'Tiredness',
+        'difficulty_breathing': 'Difficulty breathing',
+        'something_else': 'Something else...',
+        'nothing_else': 'Nothing else.',
     },
 
     Risk: {
@@ -45,135 +55,121 @@ const translations = {
         result_low_risk_info_link_2: 'About staying home',
         result_low_risk_info_link_3: 'About the coronavirus',
         question_reminder: 'Would you like me to check with you again tomorrow?',
+
+        // Risk assessment
+        'fever_ok': 'Below 38C',
+        'fever_medium': '38.0 - 39.4C',
+        'fever_high': 'Above 39.4C',
+
+        'cough_dry': 'Yes, it’s dry',
+        'cough_sputum': 'No, I have sputum',
+        'cough_phlegm': 'No, I have phlegm',
+
+        'cough_frequency_sometimes': 'Sometimes',
+        'cough_frequency_often': 'Often',
+        'cough_frequency_always': 'Almost all the time',
+
+        'difficulty_breathing_light': 'On light effort',
+        'difficulty_breathing_slightly': 'Slightly at rest',
+        'difficulty_breathing_always': 'All the time',
+
+        'tiredness_ok': 'Manage to stay up',
+        'tiredness_some': 'Can be up briefly',
+        'tiredness_high': 'Only up for toilet',
+        'tiredness_bad': 'Can\'t get out of bed',
+
+        'closeness_with_disease_no': 'No',
+        'closeness_with_disease_yes': 'Yes, it’s confirmed',
+        'closeness_with_disease_no_idea': 'I don’t know',
+
+        'ongoing_none': 'None',
+        'ongoing_hypertension': 'Hypertension',
+        'ongoing_cardiovascular': 'Cardiac disease',
+        'ongoing_lung': 'Lung disease',
+        'ongoing_cancer': 'Cancer',
+        'ongoing_diabetes': 'Diabetes',
+        'ongoing_renal': 'Renal failure',
+
+        'compromised_immune_yes': 'Yes',
+        'compromised_immune_no': 'No',
+
+        'age_less_60': 'Under 60',
+        'age_60': '60-69',
+        'age_70': '70-79',
+        'age_80': '80 or older',
+
+        // Reminders
+        'reminder_morning': 'In the morning',
+        'reminder_afternoon': 'In the afternoon',
+        'reminder_no': 'No thanks',
     },
 
     Extra: {
         question_continue_extra: 'I hope this is not too much to ask. In order to help scientists to research more about the virus, would you mind answering a few further questions?',
 
+        // Extra questions
+        'activity_light_0_4': '0 - 4 hours',
+        'activity_light_4_8': '4 - 8 hours',
+        'activity_light_8_plus': '8+ hours',
 
+        'activity_intense_0_2': '0 - 2 hours',
+        'activity_intense_2_4': '2 - 4 hours',
+        'activity_intense_4_plus': '4+ hours',
+
+        'activity_stressed_1': '1',
+        'activity_stressed_2': '2',
+        'activity_stressed_3': '3',
+        'activity_stressed_4': '4',
+        'activity_stressed_5': '5',
+
+        'caregiver_yes': 'Yes',
+        'caregiver_no': 'No',
     },
 
-    // Symptoms
-    'fever': 'Fever',
-    'cough': 'Cough',
-    'headache': 'Headache',
-    'diarrhea': 'Diarrhea',
-    'sore_throat': 'Sore throat',
-    'no_smell': 'Can’t taste/smell',
-    'tiredness': 'Tiredness',
-    'difficulty_breathing': 'Difficulty breathing',
-    'something_else': 'Something else...',
-    'nothing_else': 'Nothing else.',
 
-    // Risk assessment
-    'fever_ok': 'Below 38C',
-    'fever_medium': '38.0 - 39.4C',
-    'fever_high': 'Above 39.4C',
 
-    'cough_dry': 'Yes, it’s dry',
-    'cough_sputum': 'No, I have sputum',
-    'cough_phlegm': 'No, I have phlegm',
-
-    'cough_frequency_sometimes': 'Sometimes',
-    'cough_frequency_often': 'Often',
-    'cough_frequency_always': 'Almost all the time',
-
-    'difficulty_breathing_light': 'On light effort',
-    'difficulty_breathing_slightly': 'Slightly at rest',
-    'difficulty_breathing_always': 'All the time',
-
-    'tiredness_ok': 'Manage to stay up',
-    'tiredness_some': 'Can be up briefly',
-    'tiredness_high': 'Only up for toilet',
-    'tiredness_bad': 'Can\'t get out of bed',
-
-    'closeness_with_disease_no': 'No',
-    'closeness_with_disease_yes': 'Yes, it’s confirmed',
-    'closeness_with_disease_no_idea': 'I don’t know',
-
-    'ongoing_none': 'None',
-    'ongoing_hypertension': 'Hypertension',
-    'ongoing_cardiovascular': 'Cardiac disease',
-    'ongoing_lung': 'Lung disease',
-    'ongoing_cancer': 'Cancer',
-    'ongoing_diabetes': 'Diabetes',
-    'ongoing_renal': 'Renal failure',
-
-    'compromised_immune_yes': 'Yes',
-    'compromised_immune_no': 'No',
-
-    'age_less_60': 'Under 60',
-    'age_60': '60-69',
-    'age_70': '70-79',
-    'age_80': '80 or older',
-
-    // Reminders
-    'reminder_morning': 'In the morning',
-    'reminder_afternoon': 'In the afternoon',
-    'reminder_no': 'No thanks',
-
-    // Extra questions
-    'activity_light_0_4': '0 - 4 hours',
-    'activity_light_4_8': '4 - 8 hours',
-    'activity_light_8_plus': '8+ hours',
-
-    'activity_intense_0_2': '0 - 2 hours',
-    'activity_intense_2_4': '2 - 4 hours',
-    'activity_intense_4_plus': '4+ hours',
-
-    'activity_stressed_1': '1',
-    'activity_stressed_2': '2',
-    'activity_stressed_3': '3',
-    'activity_stressed_4': '4',
-    'activity_stressed_5': '5',
-
-    'caregiver_yes': 'Yes',
-    'caregiver_no': 'No',
 }
 
 //Facebook messenger format
-function generateOptions(array, prefix, postfix) {
-    return array.map(x => {
+function makePayloadOptionsFB(keyArray, prefix, translations) {
+    return keyArray.map(x => {
         return {
-            id: x,
+            payload: `${prefix}${x.toUpperCase()}`,
             title: translations[x],
-            payload: prefix + x.toUpperCase() + (postfix ? postfix : '').toUpperCase(),
-        }
+        };
     });
 }
 
-function getButtonsContent(array, prefix, postfix) {
-    return generateOptions(array, prefix, postfix).map(x => {
+function makeButtonsFB(keyArray, prefix, translations) {
+    return makePayloadOptionsFB(keyArray, prefix, translations).map(x => {
         return {
             type: 'postback',
-            title: x.title,
-            payload: x.payload,
+            ...x,
         }
     });
 }
 
-function getQuickReply(array, prefix, postfix) {
-    return generateOptions(array, prefix, postfix).map(x => {
+function makeQuickRepliesFB(keyArray, prefix, translations) {
+    return makePayloadOptionsFB(keyArray, prefix, translations).map(x => {
         return {
             contentType: 'text',
-            title: x.title,
-            payload: x.payload,
+            ...x,
         }
     });
 }
 
 //Telegram format
-function makeReplyMarkupTG(buttonTitles, columnCount = 1, keepKeyboard = false) {
+function makeReplyMarkupTG(buttonTitleArray, columnCount = 1, keepKeyboard = false) {
     return {
-        keyboard: makeKeyboardTG(buttonTitles, columnCount),
+        keyboard: makeKeyboardTG(buttonTitleArray, columnCount),
         resize_keyboard: true,
         one_time_keyboard: !keepKeyboard,
     };
 
 }
 
-function makeKeyboardTG(buttonTitles, columnCount) {
-    const buttons = buttonTitles.map(x => {
+function makeKeyboardTG(buttonTitleArray, columnCount) {
+    const buttons = buttonTitleArray.map(x => {
         return {
             text: x,
         }
@@ -233,8 +229,8 @@ async function routeByPlatform(context, functionTG, functionFB) {
 
 module.exports = {
     translations,
-    getButtonsContent,
-    getQuickReply,
+    makeButtonsFB,
+    makeQuickRepliesFB,
     makeReplyMarkupTG,
     extractEvents,
     getKeyByValue,

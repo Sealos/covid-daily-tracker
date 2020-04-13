@@ -2,7 +2,7 @@ const helpers = require('./helpers');
 const Extra = require('./extraQuestions');
 const Analytics = require('./analytics');
 
-const translations = helpers.translations;
+const translations = helpers.translations.Risk;
 const assessmentReplies = {
     fever: [
         'fever_ok',
@@ -76,7 +76,7 @@ async function AssessFeverTG(context) {
     });
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_fever, {
+    await context.sendText(translations.question_fever, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.fever))
     });
 }
@@ -88,9 +88,9 @@ async function AssessFeverFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.fever, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.fever, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_fever, { quickReplies: replies });
+    await context.sendText(translations.question_fever, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -102,7 +102,7 @@ async function AssessCoughTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_cough, {
+    await context.sendText(translations.question_cough, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough))
     });
 }
@@ -114,9 +114,9 @@ async function AssessCoughFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.cough, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.cough, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_cough, { quickReplies: replies });
+    await context.sendText(translations.question_cough, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -128,7 +128,7 @@ async function AssessCoughFrequencyTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_cough_frequency, {
+    await context.sendText(translations.question_cough_frequency, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.cough_frequency))
     });
 }
@@ -140,9 +140,9 @@ async function AssessCoughFrequencyFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.cough_frequency, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.cough_frequency, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_cough_frequency, { quickReplies: replies });
+    await context.sendText(translations.question_cough_frequency, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -154,7 +154,7 @@ async function AssessDifficultyBreathingTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_difficulty_breathing, {
+    await context.sendText(translations.question_difficulty_breathing, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.difficulty_breathing))
     });
 }
@@ -166,9 +166,9 @@ async function AssessDifficultyBreathingFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.difficulty_breathing, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.difficulty_breathing, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_difficulty_breathing, { quickReplies: replies });
+    await context.sendText(translations.question_difficulty_breathing, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -180,7 +180,7 @@ async function AssessTirednessTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_tiredness, {
+    await context.sendText(translations.question_tiredness, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.tiredness))
     });
 }
@@ -192,9 +192,9 @@ async function AssessTirednessFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.tiredness, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.tiredness, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_tiredness, { quickReplies: replies });
+    await context.sendText(translations.question_tiredness, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -206,7 +206,7 @@ async function AssessRiskContactTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_closeness_with_disease, {
+    await context.sendText(translations.question_closeness_with_disease, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.closeness_with_disease))
     });
 }
@@ -218,9 +218,9 @@ async function AssessRiskContactFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.closeness_with_disease, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.closeness_with_disease, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_closeness_with_disease, { quickReplies: replies });
+    await context.sendText(translations.question_closeness_with_disease, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -232,7 +232,7 @@ async function AssessOngoingDiseasesTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_ongoing, {
+    await context.sendText(translations.question_ongoing, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.ongoing))
     });
 }
@@ -244,9 +244,9 @@ async function AssessOngoingDiseasesFB(context) {
 
     await helpers.typing(context, 2000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.ongoing, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.ongoing, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_ongoing, { quickReplies: replies });
+    await context.sendText(translations.question_ongoing, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -258,11 +258,11 @@ async function AssessCompromisedImmuneTG(context) {
 
     await helpers.typing(context, 800);
 
-    await context.sendText(translations.Risk.question_compromised_immune);
+    await context.sendText(translations.question_compromised_immune);
 
     await helpers.typing(context, 800);
 
-    await context.sendText(translations.Risk.question_compromised_immune_example, {
+    await context.sendText(translations.question_compromised_immune_example, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.compromised_immune))
     });
 }
@@ -274,13 +274,13 @@ async function AssessCompromisedImmuneFB(context) {
 
     await helpers.typing(context, 3000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.compromised_immune, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.compromised_immune, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_compromised_immune);
+    await context.sendText(translations.question_compromised_immune);
 
     await helpers.typing(context, 3000);
 
-    await context.sendText(translations.Risk.question_compromised_immune_example, { quickReplies: replies });
+    await context.sendText(translations.question_compromised_immune_example, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -292,7 +292,7 @@ async function AssessAgeTG(context) {
 
     await helpers.typing(context, 500);
 
-    await context.sendText(translations.Risk.question_age, {
+    await context.sendText(translations.question_age, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(assessmentCallbackTitles.age))
     });
 }
@@ -304,9 +304,9 @@ async function AssessAgeFB(context) {
 
     await helpers.typing(context, 3000);
 
-    const replies = helpers.getQuickReply(assessmentReplies.age, 'USER_FEEDBACK_ASSESSMENT_');
+    const replies = helpers.makeQuickRepliesFB(assessmentReplies.age, 'USER_FEEDBACK_ASSESSMENT_', translations);
 
-    await context.sendText(translations.Risk.question_age, { quickReplies: replies });
+    await context.sendText(translations.question_age, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -333,9 +333,9 @@ async function FinishAssessment(context) {
     await helpers.typing(context, 1000);
 
     if (isHighRisk) {
-        await context.sendText(translations.Risk.result_high_risk);
+        await context.sendText(translations.result_high_risk);
         await helpers.typing(context, 500);
-        await context.sendText(translations.Risk.result_high_risk_2);
+        await context.sendText(translations.result_high_risk_2);
         await helpers.typing(context, 500);
 
         await helpers.routeByPlatform(context, SendHighRiskInfoTG, SendHighRiskInfoFB);
@@ -356,13 +356,13 @@ async function SendHighRiskInfoTG(context) {
     const replyMarkup = {
         inlineKeyboard: [
             [{
-                text: translations.Risk.result_high_risk_info_link,
+                text: translations.result_high_risk_info_link,
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
             }]
         ]
     };
 
-    await context.sendText(translations.Risk.result_high_risk_info_title, { replyMarkup: replyMarkup });
+    await context.sendText(translations.result_high_risk_info_title, { replyMarkup: replyMarkup });
 
 }
 
@@ -371,11 +371,11 @@ async function SendHighRiskInfoFB(context) {
         {
             type: 'web_url',
             url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-            title: translations.Risk.result_high_risk_info_link,
+            title: translations.result_high_risk_info_link,
         },
     ];
 
-    await context.sendButtonTemplate(translations.Risk.result_high_risk_info_title, buttonContent);
+    await context.sendButtonTemplate(translations.result_high_risk_info_title, buttonContent);
     await helpers.typingOff(context);
 }
 
@@ -383,21 +383,21 @@ async function SendLowRiskInfoTG(context) {
     const replyMarkup = {
         inlineKeyboard: [
             [{
-                text: translations.Risk.result_low_risk_info_link_1,
+                text: translations.result_low_risk_info_link_1,
                 url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
             }],
             [{
-                text: translations.Risk.result_low_risk_info_link_2,
+                text: translations.result_low_risk_info_link_2,
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
             }],
             [{
-                text: translations.Risk.result_low_risk_info_link_3,
+                text: translations.result_low_risk_info_link_3,
                 url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
             }],
         ]
     };
 
-    await context.sendMessage(translations.Risk.result_low_risk_info_title, { replyMarkup: replyMarkup });
+    await context.sendMessage(translations.result_low_risk_info_title, { replyMarkup: replyMarkup });
 
 }
 
@@ -406,20 +406,20 @@ async function SendLowRiskInfoFB(context) {
         {
             type: 'web_url',
             url: 'https://www.1177.se/Stockholm/sjukdomar--besvar/infektioner/forkylning-och-influensa/',
-            title: translations.Risk.result_low_risk_info_link_1,
+            title: translations.result_low_risk_info_link_1,
         },
         {
             type: 'web_url',
             url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/om-att-stanna-hemma/',
-            title: translations.Risk.result_low_risk_info_link_2,
+            title: translations.result_low_risk_info_link_2,
         },
         {
             type: 'web_url',
             url: 'https://www.1177.se/Stockholm/sa-fungerar-varden/varden-i-stockholms-lan/om-corona/',
-            title: translations.Risk.result_low_risk_info_link_3,
+            title: translations.result_low_risk_info_link_3,
         },
     ];
-    const text = translations.Risk.result_low_risk_info_title;
+    const text = translations.result_low_risk_info_title;
 
     await context.sendButtonTemplate(text, buttonContent);
     await helpers.typingOff(context);
@@ -437,7 +437,7 @@ async function AskToCheckTomorrow(context) {
 async function AskToCheckTomorrowTG(context) {
     await helpers.typing(context, 3000);
 
-    await context.sendText(translations.Risk.question_reminder, {
+    await context.sendText(translations.question_reminder, {
         replyMarkup: helpers.makeReplyMarkupTG(Object.values(reminderCallbackTitles))
     });
 }
@@ -445,9 +445,9 @@ async function AskToCheckTomorrowTG(context) {
 async function AskToCheckTomorrowFB(context) {
     await helpers.typing(context, 3000);
 
-    const replies = helpers.getQuickReply(reminderReplies, 'USER_FEEDBACK_REMINDER_');
+    const replies = helpers.makeQuickRepliesFB(reminderReplies, 'USER_FEEDBACK_REMINDER_', translations);
 
-    await context.sendText(translations.Risk.question_reminder, { quickReplies: replies });
+    await context.sendText(translations.question_reminder, { quickReplies: replies });
 
     await helpers.typingOff(context);
 }
@@ -492,7 +492,7 @@ async function HandleAssessmentReply(context) {
 
         await ContinueRiskAssessment(context);
     } else {
-        await context.sendText(`Sorry, I don\'t understand. \n` + translations.Risk[`question_${groupKey}`]);
+        await context.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${groupKey}`]);
     }
 
 }

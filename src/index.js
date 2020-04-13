@@ -89,12 +89,12 @@ module.exports = async function App(context) {
         await Risk.HandleAssessmentReply(context);
     }
 
-    else if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
-        await Extra.HandleContinueExtra(context);
-    }
-
     else if (nextAction === 'ASK_REMINDER') {
         await Risk.HandleReminder(context);
+    }
+
+    else if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
+        await Extra.HandleContinueExtra(context);
     }
 
     else if (payload) {
