@@ -158,7 +158,7 @@ async function HandleContinueExtra(context) {
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
         await helpers.typing(context, 500);
-        await context.sendText('That\'s alright!');
+        await context.sendText(translations.start_no_response);
         await helpers.typingOff(context);
 
         await Goodbye.Goodbye(context);
@@ -168,7 +168,7 @@ async function HandleContinueExtra(context) {
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
         await helpers.typing(context, 500);
-        await context.sendText('Thank you! Here it goes.');
+        await context.sendText(translations.start_no_response);
         await helpers.typingOff(context);
 
         await AskExtraQuestions(context);
@@ -201,7 +201,7 @@ async function HandleExtraReply(context) {
     const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES[questionKey]);
 
     if (!callbackKey) {
-        await context.sendText(`Sorry, I don\'t understand.`);
+        await context.sendText(translations.do_not_understand);
         await AskExtraQuestions(context);
         return;
     }
@@ -214,25 +214,25 @@ async function HandleExtraReply(context) {
 
     if (previousAnswers.includes('activity_light_0_4') && currentAnswer.includes('activity_intense_0_2')) {
         await helpers.typing(context, 1200);
-        await context.sendText('Keeping yourself physically active helps to support the immune system. Why not try to incorporate some physical activity in your daily routines, such as a brisk walk or jog, or doing some yoga at home?');
+        await context.sendText(translations.advise_low_activity);
         await helpers.typingOff(context);
     } else if (previousAnswers.includes('activity_light_8_plus') && currentAnswer.includes('activity_intense_4_plus')) {
         await helpers.typing(context, 1200);
-        await context.sendText('Physical activity and hard training is great and will help to keep you fit and strong. However, make sure you also schedule sufficient recovery time.');
+        await context.sendText(translations.advise_high_activity);
         await helpers.typingOff(context);
     } else if (currentAnswer.includes('activity_intense')) {
         await helpers.typing(context, 800);
-        await context.sendText('Regular physical activity supports the immune system and keeps us fit and healthy. Keep it up!');
+        await context.sendText(translations.advise_moderate_activity);
         await helpers.typingOff(context);
     }
 
     if (currentAnswer.includes('stressed_3') || currentAnswer.includes('stressed_4') || currentAnswer.includes('stressed_5')) {
         await helpers.typing(context, 1600);
-        await context.sendText('Looking after our mental wellbeing is important during the pandemic.\nTry to avoid media sources if you find them stressful, take some time out in nature, or practice mindfulness meditation for 10 min each day.');
+        await context.sendText(translations.advise_stress_high);
         await helpers.typingOff(context);
     } else if (currentAnswer.includes('stressed_1') || currentAnswer.includes('stressed_2')) {
         await helpers.typing(context, 1600);
-        await context.sendText('Glad to know you\'re feeling fine! It\'s important to care for our mental wellbeing during the pandemic. Keep in mind that social distancing doesn\'t mean social isolation.Try to keep the social connection through digital means!');
+        await context.sendText(translations.advise_stress_low);
         await helpers.typingOff(context);
     }
 
@@ -269,15 +269,17 @@ async function HandleExtraReply(context) {
     await AskExtraQuestions(context);
 }
 
-const extraQuestions = [
-    'activity_light',
-    'activity_intense',
-    'stressed',
-    'caregiver'
-]
+
 
 function extractPerformedExtraQuestions(context) {
     const answers = extractExtraQuestionsAnswers(context);
+
+    const extraQuestions = [
+        'activity_light',
+        'activity_intense',
+        'stressed',
+        'caregiver'
+    ];
 
     return extraQuestions.filter(question => {
         let isIncluded = false;
