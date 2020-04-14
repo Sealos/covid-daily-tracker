@@ -260,7 +260,9 @@ async function sendText(context, text, milliseconds) {
 
     if (milliseconds === undefined) {
         // Maybe we can get the length of the text and randomize it
-        milliseconds = 500;
+        // Or change it depending on the platform
+        // This will give 500 + random (500)
+        milliseconds = Math.floor(Math.random()) * 500 + 500;
     }
 
     await helpers.typingOff(context);
