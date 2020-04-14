@@ -47,10 +47,7 @@ async function AskForPostalCode(context) {
         nextAction: 'ASK_ZIPCODE',
     });
 
-    await helpers.typing(context, 1000);
-    await context.sendText('Where do you live? Would you mind sharing your postal code?');
-
-    await helpers.typingOff(context);
+    await helpers.sendText('Where do you live? Would you mind sharing your postal code?');
 }
 
 async function HandleZipCodeReceived(context) {
@@ -73,9 +70,7 @@ async function HandleZipCodeReceived(context) {
             nextAction: 'NONE',
         });
 
-        await helpers.typing(context, 500);
-        await context.sendText('No problem!');
-        await helpers.typingOff(context);
+        await helpers.sendText('No problem!');
     } else if (isValid) {
         await context.setState({
             nextAction: 'NONE',
@@ -84,14 +79,10 @@ async function HandleZipCodeReceived(context) {
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_POSTAL_CODE', numbers);
 
         // Handle zipcode
-        await helpers.typing(context, 500);
-        await context.sendText('Thank you.');
-        await helpers.typingOff(context);
+        await helpers.sendText('Thank you.');
 
     } else {
-        await helpers.typing(context, 1000);
-        await context.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
-        await helpers.typingOff(context);
+        await helpers.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
         return;
     }
 

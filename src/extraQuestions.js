@@ -62,7 +62,7 @@ async function AskActivityLight(context) {
 
     await helpers.typing(context, 1000);
 
-    await context.sendText(translations.question_activity);
+    await helpers.sendText(translations.question_activity);
 
     await helpers.typing(context, 1000);
 
@@ -146,7 +146,7 @@ async function FinishQuestions(context) {
 
     await helpers.typing(context, 2000);
 
-    await context.sendText(translations.thank_you);
+    await helpers.sendText(translations.thank_you);
 
     await helpers.typingOff(context);
 
@@ -157,9 +157,7 @@ async function HandleContinueExtra(context) {
     const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES.START);
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
-        await helpers.typing(context, 500);
-        await context.sendText(translations.start_no_response);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.start_no_response);
 
         await Goodbye.Goodbye(context);
 
@@ -167,9 +165,7 @@ async function HandleContinueExtra(context) {
     }
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
-        await helpers.typing(context, 500);
-        await context.sendText(translations.start_no_response);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.start_no_response);
 
         await AskExtraQuestions(context);
     }
@@ -201,7 +197,7 @@ async function HandleExtraReply(context) {
     const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES[questionKey]);
 
     if (!callbackKey) {
-        await context.sendText(translations.do_not_understand);
+        await helpers.sendText(translations.do_not_understand);
         await AskExtraQuestions(context);
         return;
     }
@@ -213,27 +209,17 @@ async function HandleExtraReply(context) {
     const currentAnswer = callbackKey.toLowerCase();
 
     if (previousAnswers.includes('activity_light_0_4') && currentAnswer.includes('activity_intense_0_2')) {
-        await helpers.typing(context, 1200);
-        await context.sendText(translations.advise_low_activity);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_low_activity);
     } else if (previousAnswers.includes('activity_light_8_plus') && currentAnswer.includes('activity_intense_4_plus')) {
-        await helpers.typing(context, 1200);
-        await context.sendText(translations.advise_high_activity);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_high_activity);
     } else if (currentAnswer.includes('activity_intense')) {
-        await helpers.typing(context, 800);
-        await context.sendText(translations.advise_moderate_activity);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_moderate_activity);
     }
 
     if (currentAnswer.includes('stressed_3') || currentAnswer.includes('stressed_4') || currentAnswer.includes('stressed_5')) {
-        await helpers.typing(context, 1600);
-        await context.sendText(translations.advise_stress_high);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_stress_high);
     } else if (currentAnswer.includes('stressed_1') || currentAnswer.includes('stressed_2')) {
-        await helpers.typing(context, 1600);
-        await context.sendText(translations.advise_stress_low);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_stress_low);
     }
 
     if (currentAnswer.includes('caregiver_yes')) {
@@ -261,9 +247,7 @@ async function HandleExtraReply(context) {
         await helpers.typingOff(context);
 
     } else if (currentAnswer.includes('caregiver_no')) {
-        await helpers.typing(context, 1200);
-        await context.sendText(translations.advise_caregiver_no);
-        await helpers.typingOff(context);
+        await helpers.sendText(translations.advise_caregiver_no);
     }
 
     await AskExtraQuestions(context);

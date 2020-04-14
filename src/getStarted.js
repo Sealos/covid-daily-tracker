@@ -22,13 +22,9 @@ async function ResetState(context) {
 async function GetStarted(context) {
     await ResetState(context);
 
-    await helpers.typing(context, 400);
-    await context.sendText(translations.hello);
-    await helpers.typingOff(context);
+    await helpers.sendText(translations.hello);
 
-    await helpers.typing(context, 800);
-    await context.sendText(translations.intro);
-    await helpers.typingOff(context);
+    await helpers.sendText(translations.intro);
 
     await helpers.typing(context, 400);
 
@@ -90,9 +86,7 @@ async function HandleGreetingReply(context) {
 }
 
 async function HandlePayloadHealthy(context) {
-    await helpers.typing(context, 500);
-    await context.sendText(translations.healthy_advise);
-    await helpers.typingOff(context);
+    await helpers.sendText(translations.healthy_advise);
 
     await Basic.HandleAskForTested(context);
 }

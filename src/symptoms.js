@@ -36,7 +36,6 @@ async function HandlePayloadUserSick(context) {
     } else {
         await AskSymptomsFB(context, symptomOptions);
     }
-
 }
 
 async function AskSymptomsFB(context, optionKeys) {
@@ -55,35 +54,12 @@ async function AskSymptomsFB(context, optionKeys) {
     await helpers.typingOff(context);
 }
 
-async function AskSymptomsTG(context, optionKeys, selectedSymptomKeys = undefined) {
-    await helpers.typing(context, 400);
-
-    const isFirstAsk = selectedSymptomKeys ? false : true;
-    const question = isFirstAsk ? translations.question : randQuestionAskMore();
-
-    const symptomTitles = optionKeys.map(x => {
-        const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
-        return (isSelected ? '✅' : '') + translations[x];
-    });
-
-    await context.sendText(question, {
-        replyMarkup: helpers.makeReplyMarkupTG(symptomTitles, 2, true)
-    });
-
-}
-
 async function HandleNothingElse(context) {
     await context.setState({
         nextAction: 'NONE'
     });
 
-    await helpers.typingOff(context);
-
-    await helpers.typing(context, 500);
-
-    await context.sendText('Okay, I see.');
-
-    await helpers.typingOff(context);
+    await helpers.sendText(context, 'Okay, I see.');
 
     await Basic.HandleAskForTested(context);
 }
@@ -122,10 +98,25 @@ async function AskSymptomsFurtherFB(context, optionKeys) {
     });
 
     await helpers.typingOff(context);
-
 }
 
-function randQuestionAskMore() {
+async function AskSymptomsTG(context, optionKeys, selectedSymptomKeys = undefined) {
+    await helpers.typing(context, 400);
+
+    const isFirstAsk = selectedSymptomKeys ? false : true;
+    const question = isFirstAsk ? translations.question : getRandomQuestion();
+
+    const symptomTitles = optionKeys.map(x => {
+        const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
+        return (isSelected ? '✅' : '') + translations[x];
+    });
+
+    await context.sendText(question, {
+        replyMarkup: helpers.makeReplyMarkupTG(symptomTitles, 2, true)
+    });
+}
+
+function getRandomQuestion() {
     const questionsMore = translations.question_more_arr;
     return questionsMore[Math.floor(Math.random() * questionsMore.length)];
 }

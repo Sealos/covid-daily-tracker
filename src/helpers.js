@@ -256,6 +256,25 @@ async function routeByPlatform(context, functionFB, functionTG) {
     }
 }
 
+async function sendText(context, text, milliseconds) {
+
+    if (milliseconds === undefined) {
+        // Maybe we can get the length of the text and randomize it
+        milliseconds = 500;
+    }
+
+    await helpers.typingOff(context);
+
+    await helpers.typing(context, milliseconds);
+
+    await context.sendText(text);
+
+}
+
+async function sendQuickReply(context, text, options) {
+
+}
+
 module.exports = {
     translations,
     makeButtonsFB,
@@ -268,4 +287,6 @@ module.exports = {
     typingOff,
     routeByPlatform,
     translateArray,
+    sendText,
+    sendQuickReply
 }

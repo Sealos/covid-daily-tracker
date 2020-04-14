@@ -243,9 +243,7 @@ async function AssessAge(context) {
 }
 
 async function StartRiskAssessment(context) {
-    await helpers.typing(context, 1000);
-    await context.sendText(translations.intro);
-    await helpers.typingOff(context);
+    await helpers.sendText(translations.intro);
 
     await ContinueRiskAssessment(context);
 }
@@ -259,23 +257,17 @@ async function FinishAssessment(context) {
     const hasManyHighRiskAnswers = getNumberOfHighRiskAnswers(context) >= 3;
     const isHighRisk = isDangerousCase || hasManyHighRiskAnswers;
 
-    await helpers.typing(context, 500);
-    await context.sendText('One moment please...');
-    await helpers.typing(context, 1000);
+    await helpers.sendText('One moment please...');
 
     if (isHighRisk) {
-        await context.sendText(translations.result_high_risk);
-        await helpers.typing(context, 500);
-        await context.sendText(translations.result_high_risk_2);
-        await helpers.typing(context, 500);
+        await helpers.sendText(translations.result_high_risk);
+        await helpers.sendText(translations.result_high_risk_2);
 
         await helpers.routeByPlatform(context, SendHighRiskInfoFB, SendHighRiskInfoTG);
 
     } else {
 
-        await context.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
-
-        await helpers.typing(context, 500);
+        await helpers.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
 
         await helpers.routeByPlatform(context, SendLowRiskInfoFB, SendLowRiskInfoTG);
     }
@@ -371,7 +363,7 @@ async function HandleAssessmentReply(context) {
 
         await ContinueRiskAssessment(context);
     } else {
-        await context.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${questionKey}`]);
+        await helpers.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${questionKey}`]);
     }
 
 }

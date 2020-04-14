@@ -45,9 +45,9 @@ async function HandleReminder(context) {
     await helpers.typing(context, 500);
 
     if ((eventKey.includes('MORNING') || eventKey.includes('AFTERNOON'))) {
-        await context.sendText('Sure thing! I will do.')
+        await helpers.sendText('Sure thing! I will do.')
     } else {
-        await context.sendText('Okay.')
+        await helpers.sendText('Okay.')
     }
 
     await helpers.typingOff(context);
