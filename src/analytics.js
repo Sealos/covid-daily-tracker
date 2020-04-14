@@ -1,9 +1,18 @@
 
+async function Track(context) {
+
+    if (context.event.isPayload) {
+        await TrackPayload(context);
+    } else if (context.event.isText) {
+        await TrackText(context);
+    }
+
+}
+
 async function TrackText(context) {
     const currentText = context.event.text;
-    const hasPayload = !!(context.event.payload);
 
-    if (currentText && !hasPayload) {
+    if (currentText) {
         let previousTexts = context.state.texts || [];
 
         const newText = {
@@ -38,68 +47,27 @@ async function TrackPayload(context) {
     }
 }
 
-async function HandleZipCodeReceived(context, nextFlow) {
-    const nextAction = context.state.nextAction || '';
+async function SaveEvent(context, eventKey, dataValue) {
+    const currentEvent = eventKey;
 
-    if (nextAction !== 'ASK_ZIPCODE') {
-        return;
-    }
+    if (currentEvent) {
+        let previousEvents = context.state.events;
 
-    const text = context.event.text || '';
+        const newEvent = {
+            event: currentEvent,
+            date: new Date(),
+            ...(dataValue ? { data: dataValue } : undefined)
+        };
 
-    const possibleNumbers = text.match(/\d+/g);
+        previousEvents.push(newEvent);
 
-    let numbers = possibleNumbers ? possibleNumbers.map(Number).map(x => x.toString()).join('') : '';
-
-    const isValid = numbers.length == 5;
-
-    if (text.startsWith('no') || text.startsWith('No') || text.startsWith('stop')) {
         await context.setState({
-            nextAction: 'NONE',
+            events: previousEvents,
         });
-
-        await context.typing(2000);
-        await context.sendText('No problem!');
-        await context.typingOff();
-
-        nextFlow(context);
-
-        return
-    }
-
-    if (!isValid) {
-        await context.typing(4000);
-        await context.sendText('Hmm, I didn\'t understand.\nWhat is your postal code again?');
-        await context.typingOff();
-    } else {
-        await context.setState({
-            nextAction: 'NONE',
-        });
-
-        // Handle zipcode
-        await context.typing(4000);
-        await context.sendText('Thank you.');
-        await context.typingOff();
-
-        nextFlow(context);
     }
 }
-
-async function HandleAskForPostalCode(context) {
-    await context.setState({
-        nextAction: 'ASK_ZIPCODE',
-    });
-
-    await context.typing(4000);
-    await context.sendText('Where do you live? Would you mind sharing your postal code?\n\nWe are collecting this for the cause of pandemic-related data collection, which is crucial for the public to feel informed and healthcare services to evaluate and manage the on-going crisis. All data collected is kept anonymous.');
-
-    await context.typingOff();
-}
-
 
 module.exports = {
-    TrackText,
-    TrackPayload,
-    HandleAskForPostalCode,
-    HandleZipCodeReceived
+    Track,
+    SaveEvent,
 };

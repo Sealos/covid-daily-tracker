@@ -36,5 +36,10 @@ module.exports = {
       appSecret: process.env.MESSENGER_APP_SECRET,
       verifyToken: process.env.MESSENGER_VERIFY_TOKEN,
     },
+    telegram: {
+      enabled: true,
+      path: '/webhooks/telegram',
+      accessToken: process.env.TELEGRAM_ACCESS_TOKEN,
+    },
   },
 };

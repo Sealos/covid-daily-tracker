@@ -3,119 +3,111 @@ const GetStarted = require('./getStarted');
 const Symptoms = require('./symptoms');
 const Extra = require('./extraQuestions');
 const Risk = require('./riskAssessment');
+const Basic = require('./basicData');
+const Reminder = require('./reminder');
 
-async function HandlePayloadTested(context) {
-  await Analytics.HandleAskForPostalCode(context);
-}
-
-async function HandlePayloadHealthy(context) {
-  await context.typing(2000);
-  await context.sendText("That's great! Don't forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!");
-  await context.typingOff();
-
-  await Risk.HandleAskForTested(context);
-}
 
 async function HandleDebugCases(context) {
-  const text = context.event.text;
+    const text = context.event.text;
 
-  if (text == 'start' ||
-    text == 'Start' ||
-    text.startsWith('Hi') ||
-    text.startsWith('hi') ||
-    text.startsWith('Hello') ||
-    text.startsWith('hello')) {
-    await GetStarted.GetStarted(context);
-  }
+    if (text === 'debug:state') {
+        console.log(context.state);
+        await helpers.sendText(context, context.state);
+    }
+    else if (text.includes('debug:')) {
+        await GetStarted.ResetState(context);
+    }
 
-  if (text.includes('debug:')) {
-    await GetStarted.ResetState(context);
-  }
+    if (text == 'debug:zip') {
+        await Basic.AskForPostalCode(context);
+    }
 
-  if (text == 'debug:zip') {
-    await Analytics.HandleAskForPostalCode(context);
-  }
+    if (text == 'debug:sick') {
+        await Symptoms.HandlePayloadUserSick(context);
+    }
 
-  if (text == 'debug:sick') {
-    await Symptoms.HandlePayloadUserSick(context);
-  }
+    if (text == 'debug:risk') {
+        await Risk.StartRiskAssessment(context);
+    }
 
-  if (text == 'debug:risk') {
-    await Risk.StartRiskAssessment(context);
-  }
+    if (text == 'debug:assessment') {
+        await Risk.FinishAssessment(context);
+    }
 
-  if (text == 'debug:extra') {
-    await Extra.StartExtraQuestion(context);
-  }
+    if (text == 'debug:extra') {
+        await Extra.StartExtraQuestion(context);
+    }
 
-  if (text == 'debug:reminder') {
-    await Risk.AskToCheckTomorrow(context);
-  }
+    if (text == 'debug:reminder') {
+        await Reminder.AskToCheckTomorrow(context);
+    }
 }
 
 module.exports = async function App(context) {
-
-  if (context.event.isText) {
-    await Analytics.TrackText(context);
-
-    await HandleDebugCases(context);
-
-    // After zipcode, start risk assessment
-    await Analytics.HandleZipCodeReceived(context, Risk.StartRiskAssessment);
-
-    // Check if waiting for postal number
-  }
-
-  if (context.event.isPayload) {
-    await Analytics.TrackPayload(context);
-
-    // Check if I have enough data to do assessment
-
-    let handled = false;
-
-    const payload = context.event.payload;
-    if (payload == 'GET_STARTED') {
-      handled = true;
-      await GetStarted.GetStarted(context);
+    // For some reasons, isEcho, isRead, isDelivery are also subscribed..
+    if (context.event.isEcho || context.event.isRead || context.event.isDelivery) {
+        return;
     }
 
-    if (payload == 'USER_FEEDBACK_IS_HEALTHY') {
-      handled = true;
-      await HandlePayloadHealthy(context);
+    Analytics.Track(context);
+
+    if (context.event.isText) {
+        await HandleDebugCases(context);
     }
 
-    if (payload == 'USER_FEEDBACK_IS_SICK') {
-      handled = true;
-      await Symptoms.HandlePayloadUserSick(context);
+    // Routes 
+    const payload = context.event.isPayload && context.event.payload || '';
+    const text = context.event.isText && context.event.text || '';
+    const nextAction = context.state.nextAction || '';
+
+    if (payload == 'GET_STARTED' ||
+        text &&
+        text == 'Start' ||
+        text == '/start' ||
+        text.startsWith('Hi') ||
+        text.startsWith('hi') ||
+        text.startsWith('Hello') ||
+        text.startsWith('hello')) {
+        await GetStarted.GetStarted(context);
     }
 
-    if (payload.includes('USER_FEEDBACK_SICK')) {
-      handled = true;
-      await Symptoms.HandlePayloadSymptomReport(context);
+    else if (nextAction === 'GREETING_QUESTION') {
+        await GetStarted.HandleGreetingReply(context);
     }
 
-    if (payload.includes('USER_FEEDBACK_ASSESSMENT')) {
-      handled = true;
-      await Risk.ContinueRiskAssessment(context);
+    else if (nextAction === 'ASK_SYMPTOMS') {
+        await Symptoms.HandlePayloadSymptomReport(context);
     }
 
-    if (payload.includes('USER_FEEDBACK_TESTED')) {
-      handled = true;
-      await HandlePayloadTested(context);
+    else if (nextAction === 'ASK_TESTED') {
+        await Basic.HandlePayloadTested(context);
     }
 
-    if (payload.includes('USER_FEEDBACK_CONTINUE_EXTRA')) {
-      handled = true;
-      await Extra.HandleContinueExtra(context);
+    else if (nextAction === 'ASK_ZIPCODE') {
+        await Basic.HandleZipCodeReceived(context);
     }
 
-    if (payload.includes('USER_FEEDBACK_REMINDER_')) {
-      handled = true;
-      await Risk.HandleReminder(context);
+    else if (nextAction.includes('ASSESS_')) {
+        await Risk.HandleAssessmentReply(context);
     }
 
-    if (!handled) {
-      await context.sendText('I have a bug, I did not handle action: ' + payload);
+    else if (nextAction === 'ASK_REMINDER') {
+        await Reminder.HandleReminder(context);
     }
-  }
+
+    else if (nextAction === 'CONTINUE_EXTRA') {
+        await Extra.HandleContinueExtra(context);
+    }
+
+    else if (nextAction.includes('EXTRA_ASK_')) {
+        await Extra.HandleExtraReply(context);
+    }
+
+    else if (payload) {
+        await helpers.sendText(context, 'I have a bug, I did not handle action: ' + payload);
+    }
+
+    else {
+        await helpers.sendText(context, 'Sorry, I really don\'t understand.');
+    }
 };

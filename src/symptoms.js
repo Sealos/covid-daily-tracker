@@ -1,5 +1,28 @@
 const helpers = require('./helpers');
-const Risk = require('./riskAssessment');
+const Basic = require('./basicData');
+const Analytics = require('./analytics');
+
+const translations = helpers.translations.Symptoms;
+
+const CALLBACK_KEY_PREFIX = 'USER_FEEDBACK_SYMPTOM_';
+
+const SYMPTOMS = [
+    'fever',
+    'cough',
+    'difficulty_breathing',
+    'tiredness',
+    'headache',
+    'diarrhea',
+    'sore_throat',
+    'no_smell'
+];
+
+const REPLIES = [
+    ...SYMPTOMS,
+    'something_else',
+    'nothing_else',
+];
+
 
 // First time asking for symptoms
 async function HandlePayloadUserSick(context) {
@@ -7,83 +30,108 @@ async function HandlePayloadUserSick(context) {
         nextAction: 'ASK_SYMPTOMS'
     });
 
-    await context.typing(4000);
+    const symptomOptions = [...SYMPTOMS, 'something_else'];
+    if (context.platform === 'telegram') {
+        await AskSymptomsTG(context, symptomOptions);
+    } else {
+        await AskSymptomsFB(context, symptomOptions);
+    }
+}
 
-    const initialSymptoms = helpers.getButtonsContent(['fever', 'cough', 'difficulty_breathing'], 'USER_FEEDBACK_SICK_');
-    const extraSymptoms = helpers.getQuickReply(['headache', 'diarrhea', 'sore_throat', 'no_smell', 'something_else'], 'USER_FEEDBACK_SICK_');
+async function AskSymptomsFB(context, optionKeys) {
+    await helpers.typing(context, 500);
 
-    await context.sendButtonTemplate('I’m sorry, what are your symptoms?', initialSymptoms);
+    const top3Symptoms = optionKeys.slice(0, 3);
+    const restSymptoms = optionKeys.slice(3);
 
-    await context.typing(1000);
-    await context.sendText('Or maybe any of these?', { quickReplies: extraSymptoms, });
+    await context.sendButtonTemplate(translations.question, helpers.makeButtonsFB(top3Symptoms, 'USER_FEEDBACK_SYMPTOM_', translations));
 
-    await context.typingOff();
+    await helpers.typing(context, 1000);
+    await context.sendText(translations.question_further, {
+        quickReplies: makeQuickRepliesFB(restSymptoms)
+    });
+
+    await helpers.typingOff(context);
 }
 
 async function HandleNothingElse(context) {
-    await context.typingOff();
+    await context.setState({
+        nextAction: 'NONE'
+    });
 
-    await context.typing(4000);
+    await helpers.sendText(context, 'Okay, I see.');
 
-    await context.sendText('Okay, I see.');
-
-    await context.typingOff();
-
-    await Risk.HandleAskForTested(context);
+    await Basic.HandleAskForTested(context);
 }
 
 async function HandlePayloadSymptomReport(context) {
-    const payload = context.event.payload;
+    const eventKey = context.event.payload || helpers.lookupCallbackKey(context.event.text, translations, REPLIES, 'USER_FEEDBACK_SYMPTOM_');
 
-    if (payload == 'USER_FEEDBACK_SICK_NOTHING_ELSE') {
+    if (eventKey == 'USER_FEEDBACK_SYMPTOM_NOTHING_ELSE') {
         await HandleNothingElse(context);
     } else {
-        const currentSymptoms = extractSymptoms(context);
+        await Analytics.SaveEvent(context, eventKey);
 
-        const symptomsToAsk = remainingSymptoms(currentSymptoms);
+        const selectedSymptoms = extractSymptoms(context);
+
+        const symptomsToAsk = remainingSymptoms(selectedSymptoms);
 
         if (symptomsToAsk.length > 0) {
-
-            const extraSymptoms = helpers.getQuickReply(symptomsToAsk.concat(['nothing_else']), 'USER_FEEDBACK_SICK_');
-
-            await context.typingOff();
-
-            await context.typing(2000);
-
-            const waysToAskMore = [
-                'Anything else?',
-                'Or maybe any of these?',
-                'What about these ones?'
-            ];
-
-            const text = waysToAskMore[Math.floor(Math.random() * waysToAskMore.length)];
-
-            await context.sendText(text, { quickReplies: extraSymptoms, });
-
-            await context.typingOff();
+            if (context.platform === 'telegram') {
+                await AskSymptomsTG(context, REPLIES, selectedSymptoms);
+            } else {
+                await AskSymptomsFurtherFB(context, [...symptomsToAsk, 'something_else', 'nothing_else']);
+            }
         } else {
             await HandleNothingElse(context);
         }
     }
 }
 
-function remainingSymptoms(currentSymptoms) {
-    const allValidSymptoms = [
-        'fever',
-        'cough',
-        'headache',
-        'diarrhea',
-        'tiredness',
-        'difficulty_breathing',
-        'sore_throat',
-        'no_smell'
-    ];
+async function AskSymptomsFurtherFB(context, optionKeys) {
+    await helpers.typingOff(context);
 
-    return allValidSymptoms.filter(x => !currentSymptoms.includes(x));
+    await helpers.typing(context, 600);
+
+    await context.sendText(getRandomAskMore(), {
+        quickReplies: makeQuickRepliesFB(optionKeys),
+    });
+
+    await helpers.typingOff(context);
+}
+
+async function AskSymptomsTG(context, optionKeys, selectedSymptomKeys = undefined) {
+    await helpers.typing(context, 400);
+
+    const isFirstAsk = selectedSymptomKeys ? false : true;
+    const question = isFirstAsk ? translations.question : getRandomAskMore();
+
+    const symptomTitles = optionKeys.map(x => {
+        const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
+        return (isSelected ? '✅' : '') + translations[x];
+    });
+
+    await context.sendText(question, {
+        replyMarkup: helpers.makeReplyMarkupTG(symptomTitles, 2, true)
+    });
+}
+
+function getRandomAskMore() {
+    const questionsMore = translations.question_more_arr;
+    return questionsMore[Math.floor(Math.random() * questionsMore.length)];
+}
+
+function remainingSymptoms(currentSymptoms) {
+    return SYMPTOMS.filter(x => !currentSymptoms.includes(x));
 }
 
 function extractSymptoms(context) {
-    return helpers.extractEvents(context, 'USER_FEEDBACK_SICK');
+    return helpers.extractEvents(context, 'USER_FEEDBACK_SYMPTOM');
+}
+
+
+function makeQuickRepliesFB(repliesKeyArray) {
+    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
 }
 
 module.exports = {
