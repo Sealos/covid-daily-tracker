@@ -91,9 +91,9 @@ async function HandlePayloadSymptomReport(context) {
 async function AskSymptomsFurtherFB(context, optionKeys) {
     await helpers.typingOff(context);
 
-    await helpers.typing(context, 500);
+    await helpers.typing(context, 600);
 
-    await context.sendText(randQuestionAskMore(), {
+    await context.sendText(getRandomAskMore(), {
         quickReplies: makeQuickRepliesFB(optionKeys),
     });
 
@@ -104,7 +104,7 @@ async function AskSymptomsTG(context, optionKeys, selectedSymptomKeys = undefine
     await helpers.typing(context, 400);
 
     const isFirstAsk = selectedSymptomKeys ? false : true;
-    const question = isFirstAsk ? translations.question : getRandomQuestion();
+    const question = isFirstAsk ? translations.question : getRandomAskMore();
 
     const symptomTitles = optionKeys.map(x => {
         const isSelected = selectedSymptomKeys && selectedSymptomKeys.indexOf(x) != -1 || false;
@@ -116,7 +116,7 @@ async function AskSymptomsTG(context, optionKeys, selectedSymptomKeys = undefine
     });
 }
 
-function getRandomQuestion() {
+function getRandomAskMore() {
     const questionsMore = translations.question_more_arr;
     return questionsMore[Math.floor(Math.random() * questionsMore.length)];
 }

@@ -40,19 +40,7 @@ async function StartExtraQuestion(context) {
         nextAction: 'CONTINUE_EXTRA'
     });
 
-    await helpers.typing(context, 1200);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_continue_extra, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.START)
-        });
-    } else {
-        await context.sendText(translations.question_continue_extra, {
-            quickReplies: makeQuickRepliesFB(REPLIES.START)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_continue_extra, REPLIES.START);
 }
 
 async function AskActivityLight(context) {
@@ -60,23 +48,9 @@ async function AskActivityLight(context) {
         nextAction: 'EXTRA_ASK_ACTIVITY_LIGHT'
     });
 
-    await helpers.typing(context, 1000);
+    await helpers.sendText(context, translations.question_activity);
 
-    await helpers.sendText(translations.question_activity);
-
-    await helpers.typing(context, 1000);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_activity_light, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.ACTIVITY_LIGHT)
-        });
-    } else {
-        await context.sendText(translations.question_activity_light, {
-            quickReplies: makeQuickRepliesFB(REPLIES.ACTIVITY_LIGHT)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_activity_light, REPLIES.ACTIVITY_LIGHT);
 }
 
 async function AskActivityIntense(context) {
@@ -84,19 +58,7 @@ async function AskActivityIntense(context) {
         nextAction: 'EXTRA_ASK_ACTIVITY_INTENSE'
     });
 
-    await helpers.typing(context, 1000);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_activity_intense, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.ACTIVITY_INTENSE)
-        });
-    } else {
-        await context.sendText(translations.question_activity_intense, {
-            quickReplies: makeQuickRepliesFB(REPLIES.ACTIVITY_INTENSE)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_activity_intense, REPLIES.ACTIVITY_INTENSE);
 }
 
 async function AskIfStressed(context) {
@@ -104,19 +66,7 @@ async function AskIfStressed(context) {
         nextAction: 'EXTRA_ASK_STRESSED'
     });
 
-    await helpers.typing(context, 1000);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_stressed, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.STRESSED)
-        });
-    } else {
-        await context.sendText(translations.question_stressed, {
-            quickReplies: makeQuickRepliesFB(REPLIES.STRESSED)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_stressed, REPLIES.STRESSED);
 }
 
 async function AskIfCaregiver(context) {
@@ -124,19 +74,7 @@ async function AskIfCaregiver(context) {
         nextAction: 'EXTRA_ASK_CAREGIVER'
     });
 
-    await helpers.typing(context, 1000);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_caregiver, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.CAREGIVER)
-        });
-    } else {
-        await context.sendText(translations.question_caregiver, {
-            quickReplies: makeQuickRepliesFB(REPLIES.CAREGIVER)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_caregiver, REPLIES.CAREGIVER);
 }
 
 async function FinishQuestions(context) {
@@ -144,11 +82,7 @@ async function FinishQuestions(context) {
         nextAction: 'NONE'
     });
 
-    await helpers.typing(context, 2000);
-
-    await helpers.sendText(translations.thank_you);
-
-    await helpers.typingOff(context);
+    await helpers.sendText(context, translations.thank_you);
 
     await Goodbye.Goodbye(context);
 }
@@ -157,7 +91,7 @@ async function HandleContinueExtra(context) {
     const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES.START);
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_NO') {
-        await helpers.sendText(translations.start_no_response);
+        await helpers.sendText(context, translations.start_no_response);
 
         await Goodbye.Goodbye(context);
 
@@ -165,7 +99,7 @@ async function HandleContinueExtra(context) {
     }
 
     if (callbackKey === 'USER_FEEDBACK_CONTINUE_EXTRA_START_YES') {
-        await helpers.sendText(translations.start_no_response);
+        await helpers.sendText(context, translations.start_yes_response);
 
         await AskExtraQuestions(context);
     }
@@ -197,7 +131,7 @@ async function HandleExtraReply(context) {
     const callbackKey = context.event.payload || lookupCallbackKey(context.event.text, REPLIES[questionKey]);
 
     if (!callbackKey) {
-        await helpers.sendText(translations.do_not_understand);
+        await helpers.sendText(context, translations.do_not_understand);
         await AskExtraQuestions(context);
         return;
     }
@@ -209,17 +143,17 @@ async function HandleExtraReply(context) {
     const currentAnswer = callbackKey.toLowerCase();
 
     if (previousAnswers.includes('activity_light_0_4') && currentAnswer.includes('activity_intense_0_2')) {
-        await helpers.sendText(translations.advise_low_activity);
+        await helpers.sendText(context, translations.advise_low_activity);
     } else if (previousAnswers.includes('activity_light_8_plus') && currentAnswer.includes('activity_intense_4_plus')) {
-        await helpers.sendText(translations.advise_high_activity);
+        await helpers.sendText(context, translations.advise_high_activity);
     } else if (currentAnswer.includes('activity_intense')) {
-        await helpers.sendText(translations.advise_moderate_activity);
+        await helpers.sendText(context, translations.advise_moderate_activity);
     }
 
     if (currentAnswer.includes('stressed_3') || currentAnswer.includes('stressed_4') || currentAnswer.includes('stressed_5')) {
-        await helpers.sendText(translations.advise_stress_high);
+        await helpers.sendText(context, translations.advise_stress_high);
     } else if (currentAnswer.includes('stressed_1') || currentAnswer.includes('stressed_2')) {
-        await helpers.sendText(translations.advise_stress_low);
+        await helpers.sendText(context, translations.advise_stress_low);
     }
 
     if (currentAnswer.includes('caregiver_yes')) {
@@ -247,7 +181,7 @@ async function HandleExtraReply(context) {
         await helpers.typingOff(context);
 
     } else if (currentAnswer.includes('caregiver_no')) {
-        await helpers.sendText(translations.advise_caregiver_no);
+        await helpers.sendText(context, translations.advise_caregiver_no);
     }
 
     await AskExtraQuestions(context);
@@ -279,12 +213,8 @@ function extractExtraQuestionsAnswers(context) {
     return helpers.extractEvents(context, 'USER_FEEDBACK_CONTINUE_EXTRA');
 }
 
-function makeQuickRepliesFB(repliesKeyArray) {
-    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
-}
-
-function makeReplyMarkupTG(repliesKeyArray) {
-    return helpers.makeReplyMarkupTG(helpers.translateArray(repliesKeyArray, translations));
+async function sendTextWithReplies(context, text, repliesKeyArray) {
+    return await helpers.sendTextWithReplies(context, text, repliesKeyArray, translations, CALLBACK_KEY_PREFIX);
 }
 
 function lookupCallbackKey(textValue, translationKeys) {

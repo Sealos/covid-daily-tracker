@@ -12,7 +12,7 @@ async function HandleDebugCases(context) {
 
     if (text === 'debug:state') {
         console.log(context.state);
-        await helpers.sendText(context.state);
+        await helpers.sendText(context, context.state);
     }
     else if (text.includes('debug:')) {
         await GetStarted.ResetState(context);
@@ -104,10 +104,10 @@ module.exports = async function App(context) {
     }
 
     else if (payload) {
-        await helpers.sendText('I have a bug, I did not handle action: ' + payload);
+        await helpers.sendText(context, 'I have a bug, I did not handle action: ' + payload);
     }
 
     else {
-        await helpers.sendText('Sorry, I really don\'t understand.');
+        await helpers.sendText(context, 'Sorry, I really don\'t understand.');
     }
 };

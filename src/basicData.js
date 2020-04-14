@@ -16,19 +16,7 @@ async function HandleAskForTested(context) {
         nextAction: 'ASK_TESTED',
     });
 
-    await helpers.typing(context, 1000);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.tested_question, {
-            replyMarkup: helpers.makeReplyMarkupTG(Object.values(CALLBACK_TITLES))
-        });
-    } else {
-        await context.sendText(translations.tested_question, {
-            quickReplies: helpers.makeQuickRepliesFB(['positive', 'no_likely', 'no'], 'USER_FEEDBACK_TESTED_', translations)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await helpers.sendTextWithReplies(context, translations.tested_question, ['positive', 'no_likely', 'no'], translations, 'USER_FEEDBACK_TESTED_');
 }
 
 async function HandlePayloadTested(context) {
@@ -47,7 +35,7 @@ async function AskForPostalCode(context) {
         nextAction: 'ASK_ZIPCODE',
     });
 
-    await helpers.sendText('Where do you live? Would you mind sharing your postal code?');
+    await helpers.sendText(context, 'Where do you live? Would you mind sharing your postal code?');
 }
 
 async function HandleZipCodeReceived(context) {
@@ -70,7 +58,7 @@ async function HandleZipCodeReceived(context) {
             nextAction: 'NONE',
         });
 
-        await helpers.sendText('No problem!');
+        await helpers.sendText(context, 'No problem!');
     } else if (isValid) {
         await context.setState({
             nextAction: 'NONE',
@@ -79,10 +67,10 @@ async function HandleZipCodeReceived(context) {
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_POSTAL_CODE', numbers);
 
         // Handle zipcode
-        await helpers.sendText('Thank you.');
+        await helpers.sendText(context, 'Thank you.');
 
     } else {
-        await helpers.sendText('Hmm, I didn’t understand.\nWhat is your postal code again?');
+        await helpers.sendText(context, 'Hmm, I didn’t understand.\nWhat is your postal code again?');
         return;
     }
 

@@ -63,19 +63,7 @@ async function AssessFever(context) {
         nextAction: 'ASSESS_FEVER'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_fever, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.FEVER)
-        });
-    } else {
-        await context.sendText(translations.question_fever, {
-            quickReplies: makeQuickRepliesFB(REPLIES.FEVER)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_fever, REPLIES.FEVER);
 }
 
 async function AssessCough(context) {
@@ -83,19 +71,7 @@ async function AssessCough(context) {
         nextAction: 'ASSESS_COUGH'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_cough, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.COUGH)
-        });
-    } else {
-        await context.sendText(translations.question_cough, {
-            quickReplies: makeQuickRepliesFB(REPLIES.COUGH)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_cough, REPLIES.COUGH);
 }
 
 async function AssessCoughFrequency(context) {
@@ -103,19 +79,7 @@ async function AssessCoughFrequency(context) {
         nextAction: 'ASSESS_COUGH_FREQUENCY'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_cough_frequency, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.COUGH_FREQUENCY)
-        });
-    } else {
-        await context.sendText(translations.question_cough_frequency, {
-            quickReplies: makeQuickRepliesFB(REPLIES.COUGH_FREQUENCY)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_cough_frequency, REPLIES.COUGH_FREQUENCY);
 }
 
 async function AssessDifficultyBreathing(context) {
@@ -123,19 +87,7 @@ async function AssessDifficultyBreathing(context) {
         nextAction: 'ASSESS_DIFFICULTY_BREATHING'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_difficulty_breathing, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.DIFFICULTY_BREATHING)
-        });
-    } else {
-        await context.sendText(translations.question_difficulty_breathing, {
-            quickReplies: makeQuickRepliesFB(REPLIES.DIFFICULTY_BREATHING)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_difficulty_breathing, REPLIES.DIFFICULTY_BREATHING);
 }
 
 async function AssessTiredness(context) {
@@ -143,19 +95,7 @@ async function AssessTiredness(context) {
         nextAction: 'ASSESS_TIREDNESS'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_tiredness, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.TIREDNESS)
-        });
-    } else {
-        await context.sendText(translations.question_tiredness, {
-            quickReplies: makeQuickRepliesFB(REPLIES.TIREDNESS)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_tiredness, REPLIES.TIREDNESS);
 }
 
 async function AssessRiskContact(context) {
@@ -163,19 +103,7 @@ async function AssessRiskContact(context) {
         nextAction: 'ASSESS_CONTACT'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_contact, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.CONTACT)
-        });
-    } else {
-        await context.sendText(translations.question_contact, {
-            quickReplies: makeQuickRepliesFB(REPLIES.CONTACT)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_contact, REPLIES.CONTACT);
 }
 
 async function AssessOngoingDiseases(context) {
@@ -183,19 +111,7 @@ async function AssessOngoingDiseases(context) {
         nextAction: 'ASSESS_ONGOING'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_ongoing, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.ONGOING)
-        });
-    } else {
-        await context.sendText(translations.question_ongoing, {
-            quickReplies: makeQuickRepliesFB(REPLIES.ONGOING)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_ongoing, REPLIES.ONGOING);
 }
 
 async function AssessCompromisedImmune(context) {
@@ -203,23 +119,9 @@ async function AssessCompromisedImmune(context) {
         nextAction: 'ASSESS_IMMUNE'
     });
 
-    await helpers.typing(context, 800);
+    await helpers.sendText(context, translations.question_immune);
 
-    await context.sendText(translations.question_immune);
-
-    await helpers.typing(context, 800);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_immune_example, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.IMMUNE)
-        });
-    } else {
-        await context.sendText(translations.question_immune_example, {
-            quickReplies: makeQuickRepliesFB(REPLIES.IMMUNE)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_immune_example, REPLIES.IMMUNE);
 }
 
 async function AssessAge(context) {
@@ -227,23 +129,11 @@ async function AssessAge(context) {
         nextAction: 'ASSESS_AGE'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_age, {
-            replyMarkup: makeReplyMarkupTG(REPLIES.AGE)
-        });
-    } else {
-        await context.sendText(translations.question_age, {
-            quickReplies: makeQuickRepliesFB(REPLIES.AGE)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await sendTextWithReplies(context, translations.question_age, REPLIES.AGE);
 }
 
 async function StartRiskAssessment(context) {
-    await helpers.sendText(translations.intro);
+    await helpers.sendText(context, translations.intro);
 
     await ContinueRiskAssessment(context);
 }
@@ -257,17 +147,16 @@ async function FinishAssessment(context) {
     const hasManyHighRiskAnswers = getNumberOfHighRiskAnswers(context) >= 3;
     const isHighRisk = isDangerousCase || hasManyHighRiskAnswers;
 
-    await helpers.sendText('One moment please...');
+    await helpers.sendText(context, 'One moment please...');
 
     if (isHighRisk) {
-        await helpers.sendText(translations.result_high_risk);
-        await helpers.sendText(translations.result_high_risk_2);
+        await helpers.sendText(context, translations.result_high_risk);
+        await helpers.sendText(context, translations.result_high_risk_2);
 
         await helpers.routeByPlatform(context, SendHighRiskInfoFB, SendHighRiskInfoTG);
 
     } else {
-
-        await helpers.sendText('Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
+        await helpers.sendText(context, 'Good news! You can probably manage your symptoms with self-care. I hope you will feel better soon.');
 
         await helpers.routeByPlatform(context, SendLowRiskInfoFB, SendLowRiskInfoTG);
     }
@@ -285,6 +174,8 @@ async function SendHighRiskInfoTG(context) {
         ]
     };
 
+    await helpers.typing(context, 1200);
+
     await context.sendText(translations.result_high_risk_info_title, { replyMarkup: replyMarkup });
 
 }
@@ -298,7 +189,10 @@ async function SendHighRiskInfoFB(context) {
         },
     ];
 
+    await helpers.typing(context, 1200);
+
     await context.sendButtonTemplate(translations.result_high_risk_info_title, buttonContent);
+
     await helpers.typingOff(context);
 }
 
@@ -319,6 +213,8 @@ async function SendLowRiskInfoTG(context) {
             }],
         ]
     };
+
+    await helpers.typing(context, 1200);
 
     await context.sendMessage(translations.result_low_risk_info_title, { replyMarkup: replyMarkup });
 
@@ -342,9 +238,11 @@ async function SendLowRiskInfoFB(context) {
             title: translations.result_low_risk_info_link_3,
         },
     ];
-    const text = translations.result_low_risk_info_title;
 
-    await context.sendButtonTemplate(text, buttonContent);
+    await helpers.typing(context, 1200);
+
+    await context.sendButtonTemplate(translations.result_low_risk_info_title, buttonContent);
+
     await helpers.typingOff(context);
 
 }
@@ -363,7 +261,7 @@ async function HandleAssessmentReply(context) {
 
         await ContinueRiskAssessment(context);
     } else {
-        await helpers.sendText(`Sorry, I don\'t understand. \n` + translations[`question_${questionKey}`]);
+        await helpers.sendText(context, `Sorry, I don\'t understand. \n` + translations[`question_${questionKey}`]);
     }
 
 }
@@ -429,14 +327,6 @@ function extractSymptoms(context) {
     return helpers.extractEvents(context, 'USER_FEEDBACK_SYMPTOM');
 }
 
-function makeQuickRepliesFB(repliesKeyArray) {
-    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
-}
-
-function makeReplyMarkupTG(repliesKeyArray) {
-    return helpers.makeReplyMarkupTG(helpers.translateArray(repliesKeyArray, translations));
-}
-
 function lookupCallbackKey(textValue, translationKeys) {
     return helpers.lookupCallbackKey(textValue, translations, translationKeys, CALLBACK_KEY_PREFIX);
 }
@@ -492,6 +382,11 @@ function containsDangerousAnswer(context) {
 
     return result.length > 0;
 }
+
+async function sendTextWithReplies(context, text, repliesKeyArray) {
+    return await helpers.sendTextWithReplies(context, text, repliesKeyArray, translations, CALLBACK_KEY_PREFIX);
+}
+
 
 module.exports = {
     StartRiskAssessment,

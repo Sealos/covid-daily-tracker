@@ -15,19 +15,7 @@ async function AskToCheckTomorrow(context) {
         nextAction: 'ASK_REMINDER'
     });
 
-    await helpers.typing(context, 500);
-
-    if (context.platform === 'telegram') {
-        await context.sendText(translations.question_reminder, {
-            replyMarkup: makeReplyMarkupTG(REPLIES)
-        });
-    } else {
-        await context.sendText(translations.question_reminder, {
-            quickReplies: makeQuickRepliesFB(REPLIES)
-        });
-    }
-
-    await helpers.typingOff(context);
+    await helpers.sendTextWithReplies(context, translations.question_reminder, REPLIES, translations, CALLBACK_KEY_PREFIX);
 }
 
 async function HandleReminder(context) {
@@ -42,26 +30,13 @@ async function HandleReminder(context) {
         await Analytics.SaveEvent(context, eventKey);
     }
 
-    await helpers.typing(context, 500);
-
     if ((eventKey.includes('MORNING') || eventKey.includes('AFTERNOON'))) {
-        await helpers.sendText('Sure thing! I will do.')
+        await helpers.sendText(context, 'Sure thing! I will do.')
     } else {
-        await helpers.sendText('Okay.')
+        await helpers.sendText(context, 'Okay.')
     }
 
-    await helpers.typingOff(context);
-
     await Extra.StartExtraQuestion(context);
-}
-
-
-function makeQuickRepliesFB(repliesKeyArray) {
-    return helpers.makeQuickRepliesFB(repliesKeyArray, CALLBACK_KEY_PREFIX, translations);
-}
-
-function makeReplyMarkupTG(repliesKeyArray) {
-    return helpers.makeReplyMarkupTG(helpers.translateArray(repliesKeyArray, translations));
 }
 
 function lookupCallbackKey(textValue, translationKeys) {

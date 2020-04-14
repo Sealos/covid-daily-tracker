@@ -4,10 +4,11 @@ const Symptoms = require('./symptoms');
 const Analytics = require('./analytics');
 
 const translations = helpers.translations.GetStarted;
-const CALLBACK_TITLES = {
-    USER_FEEDBACK_IS_HEALTHY: translations.answer_healthy,
-    USER_FEEDBACK_IS_SICK: translations.answer_sick,
-};
+const CALLBACK_KEY_PREFIX = 'USER_FEEDBACK_';
+const REPLIES = [
+    'is_healthy',
+    'is_sick',
+];
 
 async function ResetState(context) {
     return await context.setState({
@@ -22,42 +23,16 @@ async function ResetState(context) {
 async function GetStarted(context) {
     await ResetState(context);
 
-    await helpers.sendText(translations.hello);
+    await helpers.sendText(context, translations.hello);
 
-    await helpers.sendText(translations.intro);
-
-    await helpers.typing(context, 400);
+    await helpers.sendText(context, translations.intro);
 
     await context.setState({
         nextAction: 'GREETING_QUESTION',
     });
 
-    helpers.routeByPlatform(context, GreetingQuestionFB, GreetingQuestionTG);
+    await helpers.sendTextWithReplies(context, translations.question, REPLIES, translations, CALLBACK_KEY_PREFIX);
 
-    await helpers.typingOff(context);
-}
-
-async function GreetingQuestionFB(context) {
-    await context.sendText(translations.question, {
-        quickReplies: [
-            {
-                contentType: 'text',
-                title: CALLBACK_TITLES.USER_FEEDBACK_IS_HEALTHY,
-                payload: 'USER_FEEDBACK_IS_HEALTHY',
-            },
-            {
-                contentType: 'text',
-                title: CALLBACK_TITLES.USER_FEEDBACK_IS_SICK,
-                payload: 'USER_FEEDBACK_IS_SICK',
-            },
-        ]
-    });
-}
-
-async function GreetingQuestionTG(context) {
-    await context.sendText(translations.question, {
-        replyMarkup: helpers.makeReplyMarkupTG(Object.values(CALLBACK_TITLES))
-    });
 }
 
 async function HandleGreetingReply(context) {
@@ -73,12 +48,12 @@ async function HandleGreetingReply(context) {
         nextAction: 'NONE',
     });
 
-    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === CALLBACK_TITLES.USER_FEEDBACK_IS_HEALTHY) {
+    if (payload === 'USER_FEEDBACK_IS_HEALTHY' || text === translations['is_healthy']) {
         await HandlePayloadHealthy(context);
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_IS_HEALTHY');
     }
 
-    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === CALLBACK_TITLES.USER_FEEDBACK_IS_SICK) {
+    else if (payload === 'USER_FEEDBACK_IS_SICK' || text === translations['is_sick']) {
         await Symptoms.HandlePayloadUserSick(context);
         await Analytics.SaveEvent(context, 'USER_FEEDBACK_IS_SICK');
     }
@@ -86,7 +61,7 @@ async function HandleGreetingReply(context) {
 }
 
 async function HandlePayloadHealthy(context) {
-    await helpers.sendText(translations.healthy_advise);
+    await helpers.sendText(context, translations.healthy_advise);
 
     await Basic.HandleAskForTested(context);
 }

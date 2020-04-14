@@ -3,8 +3,8 @@ const translations = {
         hello: 'Hello!',
         intro: 'Nice to see you the first time! I’m your carer chatbot.',
         question: 'How are you feeling today?',
-        answer_healthy: 'Feeling healthy!',
-        answer_sick: 'Feeling sick',
+        is_healthy: 'Feeling healthy!',
+        is_sick: 'Feeling sick',
         healthy_advise: 'That’s great! Don’t forget to keep up the hygiene, wash your hands, stay at home and wear a facemask if you can!',
     },
 
@@ -234,11 +234,13 @@ function translateArray(keyArray, translations) {
 }
 
 async function typing(context, milliseconds) {
+    const typingTime = milliseconds || (Math.floor(Math.random()) * 400 + 400);
+
     if (context.platform === 'telegram') {
         await context.sendChatAction('typing');
-        await context.typing(milliseconds);
+        await context.typing(typingTime);
     } else {
-        await context.typing(milliseconds);
+        await context.typing(typingTime);
     }
 }
 
@@ -258,23 +260,38 @@ async function routeByPlatform(context, functionFB, functionTG) {
 
 async function sendText(context, text, milliseconds) {
 
-    if (milliseconds === undefined) {
-        // Maybe we can get the length of the text and randomize it
-        // Or change it depending on the platform
-        // This will give 500 + random (500)
-        milliseconds = Math.floor(Math.random()) * 500 + 500;
-    }
+    const typingTime = milliseconds || generateMilliseconds(text);
 
-    await helpers.typingOff(context);
-
-    await helpers.typing(context, milliseconds);
+    await typing(context, typingTime);
 
     await context.sendText(text);
 
+    await typingOff(context);
+
 }
 
-async function sendQuickReply(context, text, options) {
+async function sendTextWithReplies(context, text, repliesKeyArray, translations, prefix) {
 
+    await typing(context, generateMilliseconds(text));
+
+    if (context.platform === 'telegram') {
+        await context.sendText(text, {
+            replyMarkup: makeReplyMarkupTG(translateArray(repliesKeyArray, translations))
+        });
+    } else {
+        await context.sendText(text, {
+            quickReplies: makeQuickRepliesFB(repliesKeyArray, prefix, translations)
+        });
+    }
+
+    await typingOff(context);
+}
+
+function generateMilliseconds(text) {
+    // 0 - 200 char mapping to a weighting factor of 1x to 4x (400ms to 1600ms)
+    const lengthFactor = Math.min(text.length / 200 * 4, 4);
+    // below  will range from 400 - 2000ms
+    return lengthFactor * 400 + 400;
 }
 
 module.exports = {
@@ -288,7 +305,7 @@ module.exports = {
     typing,
     typingOff,
     routeByPlatform,
-    translateArray,
+    // translateArray,
     sendText,
-    sendQuickReply
+    sendTextWithReplies,
 }
